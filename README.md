@@ -25,47 +25,18 @@ Random Coffee bot for the Mattermost
 [![Python][Python-badge]][Python-url]
 [![Poetry][Poetry-badge]][Poetry-url]
 
-## FAQ
+## Разработка
 
-Инофрмация для разработчика
+### Для запуска проекта:
+  1. Установить зависимости:
+  ```
+   poetry install
+  ```
 
-<details>
-  <summary><h3>Работа с Poetry</h3></summary>
-
-***В этом разделе описана работа с poetry.***
-
-[Подробнее о командах poetry](https://python-poetry.org/docs/cli/)
-
-#### Настройка окружения проекта
-Установку необходимо выполнять через curl, как в документации.
-
-    ```shell
-    poetry env use python3.9; poetry install
-    ```
-
-#### Активировать виртуальное окружение
-
-    ```shell
-    poetry shell
-    ```
-
-#### Добавить зависимость
-
-    ```shell
-    poetry add <package_name>
-    ```
-
-> **Note**
-> Использование флага `-G dev` позволяет установить зависимость,
-> необходимую только для разработки.
-> Это полезно для разделения develop и prod зависимостей.
-
-#### Запустить скрипт без активации виртуального окружения
-
-```shell
-poetry run <script_name>.py
-```
-</details>
+  2. Активировать виртуальное окружение:
+  ```
+   poetry shell
+  ```
 
 <!-- MARKDOWN LINKS & BADGES -->
 
