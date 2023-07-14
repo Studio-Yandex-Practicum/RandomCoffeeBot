@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "randomcofeebot"
+name = "randomcoffeebot"
 version = "0.1.0"
 description = ""
 authors = ["Павел Смирнов <baksbannysmirnov@yandex.ru>"]
@@ -7,7 +7,7 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.11"
 
 
 [build-system]
