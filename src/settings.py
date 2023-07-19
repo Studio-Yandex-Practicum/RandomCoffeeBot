@@ -13,6 +13,7 @@ class Settings(BaseSettings):
 
     class Config:
         """Settings secrets"""
+
         env_file = ".env"
         env_file_encoding = "utf-8"
 
