@@ -1,7 +1,6 @@
 import os
 import uuid
-from datetime import time
-from datetime import timedelta
+from datetime import time, timedelta
 from functools import cache
 from pathlib import Path
 from urllib import urljoin
@@ -18,8 +17,8 @@ class Settings(BaseSettings):
     description: str
 
     class Config:
-        env_file = '.env'
-        env_file_encoding = 'utf-8'
+        env_file = ".env"
+        env_file_encoding = "utf-8"
 
     # Settings connect to the database
     POSTGRES_USER: str
