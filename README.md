@@ -38,6 +38,16 @@ Random Coffee bot for the Mattermost
    poetry shell
   ```
 
+  3. Настроить pre-commit.
+  ```
+  pre-commit install
+  ```
+
+  > **Примечание**:
+  > Перед каждым коммитом будет запущен линтер и форматтер,
+  > который автоматически отформатирует код
+  > согласно принятому в команде codestyle.
+
 <!-- MARKDOWN LINKS & BADGES -->
 
 [Python-url]: https://www.python.org/doc/
