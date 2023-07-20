@@ -1,8 +1,5 @@
-from dependency_injector import containers, providers
+from dependency_injector import containers
 
 
 class Container(containers.DeclarativeContainer):
-    """Основа класса контейнера."""
-
-    config = providers.Configuration()
     pass
