@@ -7,7 +7,7 @@ from sqlalchemy.sql import func
 class Base(DeclarativeBase):
     """Base class for models"""
 
-    id: Mapped[ind] = mapped_column(primary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[date] = mapped_column(
         server_default=func.current_timestamp()
     )

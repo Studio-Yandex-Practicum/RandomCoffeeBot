@@ -1,4 +1,3 @@
-# Settings connect to the database
 POSTGRES_USER: str
 POSTGRES_PASSWORD: str
 POSTGRES_DB: str = "random_coffee_db"
@@ -7,7 +6,7 @@ DB_PORT: str = 5432
 TESTING: bool = False
 
 
-class Settings(BaseSettings):
+class Settings():
     """Global project settings."""
 
     @property
@@ -18,11 +17,6 @@ class Settings(BaseSettings):
             f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
         )
-
-    class Config:
-        """Settings secrets"""
-
-        env_file = ".env" if TESTING else None
 
 
 settings = Settings()
