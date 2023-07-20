@@ -3,7 +3,6 @@ from sqlalchemy.orm import sessionmaker
 
 from src.settings import settings
 
-
 engine = create_async_engine(settings.database_url)
 session_factory = sessionmaker(
     engine,
