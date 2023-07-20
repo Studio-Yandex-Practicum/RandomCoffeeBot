@@ -6,7 +6,7 @@ DB_PORT: str = 5432
 TESTING: bool = False
 
 
-class Settings():
+class Settings:
     """Global project settings."""
 
     @property
