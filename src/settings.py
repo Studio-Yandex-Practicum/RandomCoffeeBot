@@ -1,28 +1,14 @@
-from pathlib import Path
-
-from pydantic import BaseSettings
-
-BASE_DIR = Path(__file__).resolve().parent.parent
+# Settings connect to the database
+POSTGRES_USER: str
+POSTGRES_PASSWORD: str
+POSTGRES_DB: str = "random_coffee_db"
+DB_HOST: str = "localhost"
+DB_PORT: str = 5432
+TESTING: bool = False
 
 
 class Settings(BaseSettings):
     """Global project settings."""
-
-    app_title: str = "RandomCoffeeBot"
-    description: str
-
-    class Config:
-        """Settings secrets"""
-
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-
-    # Settings connect to the database
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str = "random_coffee_db"
-    DB_HOST: str = "localhost"
-    DB_PORT: str = 5432
 
     @property
     def database_url(self) -> str:
@@ -32,6 +18,11 @@ class Settings(BaseSettings):
             f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.DB_HOST}:{self.DB_PORT}/{self.POSTGRES_DB}"
         )
+
+    class Config:
+        """Settings secrets"""
+
+        env_file = ".env" if TESTING else None
 
 
 settings = Settings()
