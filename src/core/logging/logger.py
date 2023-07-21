@@ -5,13 +5,13 @@ from pathlib import Path
 
 import structlog
 
-LOG_ROOT = Path(__file__).parent.parent.parent / 'logs'
+LOG_ROOT = Path(__file__).parent.parent.parent / "logs"
 
 
-def init_logging(name: str = 'Root', filepath: Path = LOG_ROOT):
+def init_logging(name: str = "Root", filepath: Path = LOG_ROOT):
 
     filepath.mkdir(exist_ok=True)
-    if not os.path.exists(filepath := filepath / 'log.log'):
+    if not os.path.exists(filepath := filepath / "log.log"):
         filepath.touch()
 
     processors = [
@@ -32,7 +32,7 @@ def init_logging(name: str = 'Root', filepath: Path = LOG_ROOT):
             foreign_pre_chain=processors,
         )
     )
-    file_handler = logging.FileHandler(filepath, 'w')
+    file_handler = logging.FileHandler(filepath, "w")
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
@@ -41,13 +41,7 @@ def init_logging(name: str = 'Root', filepath: Path = LOG_ROOT):
         )
     )
 
-    logging.basicConfig(
-        handlers=[
-            stream_handler,
-            file_handler
-        ],
-        level=logging.DEBUG
-    )
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.DEBUG)
 
     structlog.configure(
         processors=processors,
