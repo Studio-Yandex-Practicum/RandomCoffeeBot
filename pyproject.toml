@@ -9,6 +9,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 dependency-injector = "^4.41.0"
+sqlalchemy = "^2.0.19"
+asyncpg = "^0.28.0"
 
 
 [tool.poetry.group.dev.dependencies]
