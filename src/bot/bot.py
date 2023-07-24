@@ -1,8 +1,25 @@
-from mmpy_bot import Plugin, listen_to
-from mmpy_bot import Message
+from mmpy_bot import Bot, Settings
+
+from plugins import MyPlugin
 
 
-class MyPlugin(Plugin):
-    @listen_to("Привет!")
-    async def wake_up(self, message: Message):
-        self.driver.reply_to(message, "Привет, я помогу организовать тебе random coffee")
+def init_bot():
+    bot = Bot(
+        settings=Settings(
+            MATTERMOST_URL="mattermost",
+            MATTERMOST_PORT=8065,
+            MATTERMOST_API_PATH='/api/v4',
+            BOT_TOKEN="8o38jyaqc784xf7jnes1r4jq5o",
+            BOT_TEAM="Coffee",
+            SSL_VERIFY=False,
+        ),
+        plugins=[MyPlugin()],
+    )
+    return bot
+
+
+async def start_bot():
+    bot = init_bot()
+    await bot.run()
+    return bot
+
