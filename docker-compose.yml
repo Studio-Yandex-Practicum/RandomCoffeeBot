@@ -12,16 +12,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    restart: always
     expose:
       - 8000
-
-  db:
-    image: postgres:13.2
-    ports:
-      - "5432:5432"
-    volumes:
-      - ./postgres-data:/var/lib/postgresql/data
-    environment:
-      - POSTGRES_USER=mattermost
-      - POSTGRES_USER_PASSWORD=mattermost
-      - POSTGRES_DB=mattermost
+    depends_on:
+      - mattermost

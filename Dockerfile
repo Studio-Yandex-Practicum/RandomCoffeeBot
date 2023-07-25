@@ -12,6 +12,4 @@ RUN poetry install --without dev
 
 COPY . .
 
-EXPOSE 8000
-
 CMD [ "python", "src/bot/bot.py" ]
