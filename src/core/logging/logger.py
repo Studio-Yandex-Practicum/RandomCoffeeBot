@@ -9,7 +9,6 @@ LOG_ROOT = Path(__file__).parent.parent.parent / "logs"
 
 
 def init_logging(name: str = "Root", filepath: Path = LOG_ROOT):
-
     filepath.mkdir(exist_ok=True)
     if not os.path.exists(filepath := filepath / "log.log"):
         filepath.touch()
