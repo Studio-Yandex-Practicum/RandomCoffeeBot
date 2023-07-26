@@ -1,5 +1,4 @@
-from mmpy_bot import Plugin, listen_to
-from mmpy_bot import Message
+from mmpy_bot import Message, Plugin, listen_to
 
 
 class MyPlugin(Plugin):
