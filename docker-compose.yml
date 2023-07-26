@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  mattermost:
+    image: mattermost/mattermost-preview
+    volumes:
+      - ./config:/mattermost/config
+    ports:
+      - "8065:8065"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    expose:
+      - 8000
+    depends_on:
+      - mattermost
