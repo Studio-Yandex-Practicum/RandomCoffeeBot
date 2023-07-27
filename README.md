@@ -49,24 +49,19 @@ Random Coffee bot for the Mattermost
   
 
 ### Для запуска клиента Mattermost и настройки бота:
-  1. Собрать проект из файла docker-compose.yml:
+1. Запустить проект в отдельных контейнерах:
   ```
-   docker-compose build
-  ```
-
-  2. Запустить проект в отдельных контейнерах:
-  ```
-   docker-compose up
+   docker-compose -f infra/docker-compose.tests.yml up -d
   ```
 
-  3. Создать аккаунт на сайте Mattermost:
+2. Создать аккаунт на сайте Mattermost:
   ```
   http://localhost:8065
   http://localhost:8065/signup_user_complete
   ```
-4. В разделе System Console перейти на вкладку Bot Accounts, установить все галочки "true" и перейти по гиперссылке "Integrations>Bot Accounts"
-5. Кнопкой "Add Bot Account" создать бота и скопировать токен
-6. Полученный токен добавить в настройки бота и пересобрать проект в контейнерах
+3. В разделе System Console перейти на вкладку Bot Accounts, установить все галочки "true" и перейти по гиперссылке "Integrations>Bot Accounts"
+4. Кнопкой "Add Bot Account" создать бота и скопировать токен
+5. Полученный токен добавить в настройки бота и пересобрать проект в контейнерах
 
 <!-- MARKDOWN LINKS & BADGES -->
 
