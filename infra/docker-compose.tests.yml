@@ -10,7 +10,7 @@ services:
 
   web:
     build:
-      context: .
+      context: ../
       dockerfile: Dockerfile
     restart: always
     expose:
