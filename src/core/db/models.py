@@ -27,7 +27,7 @@ class Base(DeclarativeBase):
 class User(Base):
     __tablename__ = "users"
 
-    username: Mapped[str] = mapped_column(String(50), nullable=False)
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[StatusEnum] = mapped_column(nullable=False)

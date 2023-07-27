@@ -1,21 +1,25 @@
 import asyncio
 
+from sqlalchemy.future import select
+
 from src.core.db.models import Base, User
 from src.core.db.session import async_session_maker, engine
 
 
 async def main():
-    async with engine.begin() as conn:
+    engine_test = engine
+    async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
-    async with engine.begin() as conn:
+    async with engine_test.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
-    session = async_session_maker
-    async with session as session:
-        async with session.begin():
-            s = "IN"
-            dict = {"username": "oladushkin", "first_name": "Dima", "last_name": "Shelepin", "status": s}
-            session.add(User(**dict))
-            session.commit()
+    async with async_session_maker() as ses:
+        test_status = "IN_MEETING"
+        obj = User(username="oladushkin", first_name="Dima", last_name="Shelepin", status=test_status)
+        ses.add(obj)
+        await ses.commit()
+        db_objs = await ses.execute(select(User))
+        result = db_objs.scalars().all()
+        print(result)
 
 
 if __name__ == "__main__":
