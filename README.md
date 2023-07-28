@@ -42,11 +42,26 @@ Random Coffee bot for the Mattermost
   ```
   pre-commit install
   ```
-
   > **Примечание**:
   > Перед каждым коммитом будет запущен линтер и форматтер,
   > который автоматически отформатирует код
   > согласно принятому в команде codestyle.
+
+
+### Для запуска клиента Mattermost и настройки бота:
+1. Запустить проект в отдельных контейнерах:
+  ```
+   docker-compose -f infra/docker-compose.tests.yml up -d
+  ```
+
+2. Создать аккаунт на сайте Mattermost:
+  ```
+  http://localhost:8065
+  http://localhost:8065/signup_user_complete
+  ```
+3. В разделе System Console перейти на вкладку Bot Accounts, установить все галочки "true" и перейти по гиперссылке "Integrations>Bot Accounts"
+4. Кнопкой "Add Bot Account" создать бота и скопировать токен
+5. Полученный токен добавить в настройки бота и пересобрать проект в контейнерах
 
 <!-- MARKDOWN LINKS & BADGES -->
 
