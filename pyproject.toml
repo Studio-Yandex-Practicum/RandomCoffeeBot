@@ -13,6 +13,7 @@ httpx = "^0.24.1"
 dependency-injector = "^4.41.0"
 sqlalchemy = "^2.0.19"
 asyncpg = "^0.28.0"
+pydantic-settings = "^2.0.2"
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^6.0.0"
