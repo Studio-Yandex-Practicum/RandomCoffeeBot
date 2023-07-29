@@ -6,7 +6,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
-from src.core import exceptions
+from src.core.exceptions import exceptions
 
 Model = TypeVar("Model")
 
