@@ -5,10 +5,7 @@ import sys
 import structlog
 from dependency_injector.wiring import Provide
 
-from src.constants import ROOT_FOLDER
 from src.settings import Container, Settings
-
-LOG_ROOT = ROOT_FOLDER / "logs"
 
 
 def init_logging(settings: Settings = Provide[Container.settings]):

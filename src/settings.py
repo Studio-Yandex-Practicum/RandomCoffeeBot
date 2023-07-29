@@ -1,6 +1,6 @@
 from logging import DEBUG
 
-from pydantic import AnyUrl, HttpUrl, PostgresDsn
+from pydantic import AnyUrl, DirectoryPath, HttpUrl, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from src.constants import ROOT_FOLDER
@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     BOT_TOKEN: str
     BOT_TEAM: str
     SSL_VERIFY: bool = False
+    LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
     LOG_NAME: str = "log.log"
-    LOG_MIN_ERROR_LEVEL: str = DEBUG
+    LOG_MIN_ERROR_LEVEL: int = DEBUG
     LOGGER_NAME: str = "root"
