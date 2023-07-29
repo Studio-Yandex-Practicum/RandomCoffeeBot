@@ -1,16 +1,19 @@
 import logging
 import os
 import sys
-from pathlib import Path
 
 import structlog
+from dependency_injector.wiring import Provide
 
-LOG_ROOT = Path(__file__).parent.parent.parent / "logs"
+from src.constants import ROOT_FOLDER
+from src.settings import Container, Settings
+
+LOG_ROOT = ROOT_FOLDER / "logs"
 
 
-def init_logging(name: str = "Root", filepath: Path = LOG_ROOT):
-    filepath.mkdir(exist_ok=True)
-    if not os.path.exists(filepath := filepath / "log.log"):
+def init_logging(settings: Settings = Provide[Container.settings]):
+    settings.LOG_ROOT.mkdir(exist_ok=True)
+    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
         filepath.touch()
 
     processors = [
@@ -40,7 +43,7 @@ def init_logging(name: str = "Root", filepath: Path = LOG_ROOT):
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.DEBUG)
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)
 
     structlog.configure(
         processors=processors,
@@ -50,4 +53,4 @@ def init_logging(name: str = "Root", filepath: Path = LOG_ROOT):
         cache_logger_on_first_use=True,
     )
 
-    return structlog.get_logger(name)
+    return structlog.get_logger(settings.LOGGER_NAME)

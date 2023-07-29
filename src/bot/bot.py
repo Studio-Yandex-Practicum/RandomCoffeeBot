@@ -1,10 +1,11 @@
+from dependency_injector.wiring import Provide
 from mmpy_bot import Bot, Settings
 from plugins import MyPlugin
 
-from depends import settings
+from depends import Container
 
 
-def init_bot():
+def init_bot(settings=Provide[Container.Settings]):
     bot = Bot(
         settings=Settings(
             MATTERMOST_URL=settings.mattermost_url,
