@@ -8,7 +8,7 @@ from dependency_injector.wiring import Provide
 from src.settings import Container, Settings
 
 
-def init_logging(settings: Settings = Provide[Container.settings]):
+def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):
     settings.LOG_ROOT.mkdir(exist_ok=True)
     if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
         filepath.touch()
@@ -50,4 +50,4 @@ def init_logging(settings: Settings = Provide[Container.settings]):
         cache_logger_on_first_use=True,
     )
 
-    return structlog.get_logger(settings.LOGGER_NAME)
+    return structlog.get_logger(name)
