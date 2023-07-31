@@ -8,12 +8,12 @@ from depends import Container
 def init_bot(settings=Provide[Container.Settings]):
     bot = Bot(
         settings=Settings(
-            MATTERMOST_URL=settings.mattermost_url,
-            MATTERMOST_PORT=settings.mattermost_port,
-            MATTERMOST_API_PATH=settings.mattermost_api_path,
-            BOT_TOKEN=settings.bot_token,
-            BOT_TEAM=settings.bot_team,
-            SSL_VERIFY=settings.ssl_verify,
+            MATTERMOST_URL=settings.MATTERMOST_URL,
+            MATTERMOST_PORT=settings.MATTERMOST_PORT,
+            MATTERMOST_API_PATH=settings.MATTERMOST_API_PATH,
+            BOT_TOKEN=settings.BOT_TOKEN,
+            BOT_TEAM=settings.BOT_TEAM,
+            SSL_VERIFY=settings.SSL_VERIFY,
         ),
         plugins=[MyPlugin()],
     )
