@@ -3,9 +3,11 @@ from dataclasses import field
 from pathlib import Path
 from typing import Optional, Sequence
 
+from pydantic import DirectoryPath, PostgresDsn
 from pydantic_settings import BaseSettings
 
 ROOT_FOLDER = Path(__file__).parent.parent
+DSN_TEMPLATE = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
 
 class Settings(BaseSettings):
@@ -36,4 +38,15 @@ class Settings(BaseSettings):
     # logging settings
     LOG_MIN_ERROR_LEVEL: int = logging.DEBUG
     LOGGER_NAME: str = "root"
-    LOG_ROOT: str = "/logs"
+    LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
+
+    @property
+    def database_url(self) -> PostgresDsn:
+        """assembles a valid DSN from provided settings"""
+        return DSN_TEMPLATE.format(
+            user=self.POSTGRES_USER,
+            password=self.POSTGRES_PASSWORD,
+            host=self.DB_HOST,
+            port=self.DB_PORT,
+            db_name=self.POSTGRES_DB,
+        )
