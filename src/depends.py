@@ -1,7 +1,7 @@
 from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from .settings import Settings
+from settings import Settings
 
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
 
