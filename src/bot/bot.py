@@ -1,16 +1,19 @@
+from dependency_injector.wiring import Provide
 from mmpy_bot import Bot, Settings
 from plugins import MyPlugin
 
+from depends import Container
 
-def init_bot():
+
+def init_bot(settings=Provide[Container.Settings]):
     bot = Bot(
         settings=Settings(
-            MATTERMOST_URL="http://mattermost",
-            MATTERMOST_PORT=8065,
-            MATTERMOST_API_PATH="/api/v4",
-            BOT_TOKEN="<your_bot_token>",
-            BOT_TEAM="<team_name>",
-            SSL_VERIFY=False,
+            MATTERMOST_URL=settings.MATTERMOST_URL,
+            MATTERMOST_PORT=settings.MATTERMOST_PORT,
+            MATTERMOST_API_PATH=settings.MATTERMOST_API_PATH,
+            BOT_TOKEN=settings.BOT_TOKEN,
+            BOT_TEAM=settings.BOT_TEAM,
+            SSL_VERIFY=settings.SSL_VERIFY,
         ),
         plugins=[MyPlugin()],
     )
