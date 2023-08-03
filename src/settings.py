@@ -1,6 +1,7 @@
 import logging
+from dataclasses import field
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Sequence
 
 from pydantic_settings import BaseSettings
 
@@ -23,7 +24,10 @@ class Settings(BaseSettings):
     MATTERMOST_API_PATH: str = "/api/v4"
     BOT_TOKEN: str = "xzohhrnp5pdiujnizu5x9eqq4r"
     BOT_TEAM: str = "bot"
+    IGNORE_USERS: Sequence[str] = field(default_factory=list)
     SSL_VERIFY: bool = False
+    WEBHOOK_HOST_ENABLED: bool = False
+    SCHEDULER_PERIOD: float = 1.0
     DEBUG: bool = False
     LOG_FORMAT: str = "[%(asctime)s][%(name)s][%(levelname)s] %(message)s"
     LOG_DATE_FORMAT: str = "%m/%d/%Y %H:%M:%S"
