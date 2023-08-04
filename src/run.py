@@ -1,6 +1,15 @@
+from dependency_injector.wiring import inject
+
 from bot.bot import init_bot
 from depends import Container
 
-if __name__ == "__main__":
+
+@inject
+def main():
     container = Container()
-    bot = init_bot(container.settings())
+    container.wire(packages=("src",))
+    init_bot(container.settings())
+
+
+if __name__ == "__main__":
+    main()
