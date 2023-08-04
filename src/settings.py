@@ -22,8 +22,8 @@ class Settings(BaseSettings):
     MATTERMOST_URL: str = "http://localhost"
     MATTERMOST_PORT: int = 8065
     MATTERMOST_API_PATH: str = "/api/v4"
-    BOT_TOKEN: str = "xzohhrnp5pdiujnizu5x9eqq4r"
-    BOT_TEAM: str = "bot"
+    BOT_TOKEN: str
+    BOT_TEAM: str
     SSL_VERIFY: bool = False
     # logging settings
     LOG_MIN_ERROR_LEVEL: int = DEBUG
