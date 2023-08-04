@@ -6,7 +6,7 @@ from depends import Container
 from settings import Settings
 
 
-def init_bot(config: Provide[Container.settings]):
+def init_bot(config: Settings):
     bot = Bot(
         settings=Settings(
             MATTERMOST_URL=config.MATTERMOST_URL,
