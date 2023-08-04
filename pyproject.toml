@@ -5,6 +5,7 @@ description = ""
 authors = ["Павел Смирнов <baksbannysmirnov@yandex.ru>"]
 license = "MIT"
 readme = "README.md"
+packages = [{include = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

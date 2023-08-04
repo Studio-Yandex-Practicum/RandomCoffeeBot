@@ -12,4 +12,4 @@ RUN poetry install --without dev
 
 COPY . .
 
-CMD [ "python", "src/bot/bot.py" ]
+CMD [ "python", "src/run.py" ]
