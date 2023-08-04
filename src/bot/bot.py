@@ -16,4 +16,4 @@ def init_bot(config: Settings_bot):
         ),
         plugins=[MyPlugin()],
     )
-    bot.run()
+    return bot

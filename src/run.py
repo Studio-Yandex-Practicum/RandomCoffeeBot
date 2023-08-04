@@ -8,7 +8,8 @@ from depends import Container
 def main():
     container = Container()
     container.wire(packages=("src",))
-    init_bot(container.settings())
+    bot = init_bot(container.settings())
+    bot.run()
 
 
 if __name__ == "__main__":
