@@ -1,0 +1,29 @@
+version: "3.11"
+
+services:
+  db:
+    container_name: "db_bot"
+    image: postgres:15.3-alpine3.18
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - "5432:5432"
+
+  bot:
+    container_name: "bot_mattermost"
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    network_mode: host
+    command: python ./src/run.py
+    restart: always
+    expose:
+      - 8000
+    depends_on:
+      - db
+
+volumes:
+  db:
