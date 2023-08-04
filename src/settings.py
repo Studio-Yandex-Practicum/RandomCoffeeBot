@@ -2,16 +2,16 @@ from logging import DEBUG
 from pathlib import Path
 
 from pydantic import AnyUrl, DirectoryPath, PostgresDsn
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
 DSN_TEMPLATE = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
 
 class Settings(BaseSettings):
-    #        model_config = SettingsConfigDict(
-    #            extra="ignore", case_sensitive=True, env_file=ENV_FILE if (ENV_FILE := ROOT_FOLDER / ".env").exists() else None
-    #        )
+    model_config = SettingsConfigDict(
+        extra="ignore", case_sensitive=True, env_file=ROOT_FOLDER / ".env" if (ROOT_FOLDER / ".env").exists() else None
+    )
     # database connection configuration
     DB_HOST: AnyUrl = "http://localhost"
     DB_PORT: int = 5432
