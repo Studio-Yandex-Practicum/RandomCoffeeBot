@@ -1,11 +1,14 @@
 FROM python:3.11
 
-RUN python -m pip install --upgrade pip
+RUN mkdir /app
 
 WORKDIR /app
 
-COPY . .
+COPY requirements.txt /app
+RUN pip3 install -r /app/requirements.txt --no-cache-dir
 
-RUN pip install poetry==1.3.2
-RUN poetry config virtualenvs.create false
-RUN poetry install --without dev
+COPY . .
+RUN pip install --upgrade pip
+RUN pip install .
+
+CMD [ "python", "src/run.py" ]
