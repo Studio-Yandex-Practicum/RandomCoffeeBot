@@ -1,4 +1,4 @@
-import logging
+import structlog
 
 from bot.bot import init_bot
 from depends import Container
@@ -10,7 +10,8 @@ def main():
     container.wire(packages=("src",))
     init_logging()
     bot = init_bot(container.settings())
-    logging.info("Application started")
+    log = structlog.get_logger()
+    log.info("Application started")
     bot.run()
 
 
