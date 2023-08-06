@@ -1,7 +1,6 @@
-from logging import DEBUG
 from pathlib import Path
 
-from pydantic import AnyUrl, DirectoryPath, PostgresDsn
+from pydantic import DirectoryPath, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
@@ -13,7 +12,7 @@ class Settings(BaseSettings):
         extra="ignore", case_sensitive=True, env_file=ROOT_FOLDER / ".env" if (ROOT_FOLDER / ".env").exists() else None
     )
     # database connection configuration
-    DB_HOST: AnyUrl = "http://localhost"
+    DB_HOST: str = "localhost"
     DB_PORT: int = 5432
     POSTGRES_DB: str = "postgres"
     POSTGRES_USER: str = "postgres"
@@ -26,7 +25,7 @@ class Settings(BaseSettings):
     BOT_TEAM: str
     SSL_VERIFY: bool = False
     # logging settings
-    LOG_MIN_ERROR_LEVEL: int = DEBUG
+    LOG_MIN_ERROR_LEVEL: int | str = ...
     LOGGER_NAME: str = "root"
     LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
 
