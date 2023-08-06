@@ -1,4 +1,3 @@
-import logging
 import os
 import sys
 
@@ -23,16 +22,16 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         structlog.stdlib.ProcessorFormatter.wrap_for_formatter,
     ]
 
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setLevel(logging.INFO)
+    stream_handler = core.StreamHandler(sys.stdout)
+    stream_handler.setLevel(core.INFO)
     stream_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.processors.LogfmtRenderer(),
             foreign_pre_chain=processors,
         )
     )
-    file_handler = logging.FileHandler(filepath, "w")
-    file_handler.setLevel(logging.DEBUG)
+    file_handler = core.FileHandler(filepath, "w")
+    file_handler.setLevel(core.DEBUG)
     file_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.processors.JSONRenderer(),
@@ -40,7 +39,7 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)
+    core.basicConfig(handlers=[stream_handler, file_handler], level=core.LOG_MIN_ERROR_LEVEL)
 
     structlog.configure(
         processors=processors,
@@ -49,5 +48,3 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         context_class=dict,
         cache_logger_on_first_use=True,
     )
-
-    return structlog.get_logger(name)
