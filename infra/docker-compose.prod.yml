@@ -9,8 +9,6 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432"
 
   bot:
     container_name: "bot_mattermost"
@@ -19,8 +17,6 @@ services:
       dockerfile: Dockerfile
     network_mode: host
     restart: always
-    expose:
-      - 8000
     depends_on:
       - db
 

@@ -5,10 +5,10 @@ RUN mkdir /app
 WORKDIR /app
 
 COPY requirements.txt /app
-RUN pip3 install -r /app/requirements.txt --no-cache-dir
+RUN pip install --upgrade pip
+RUN pip install -r /app/requirements.txt --no-cache-dir
 
 COPY . .
-RUN pip install --upgrade pip
 RUN pip install .
 
 CMD [ "python", "src/run.py" ]
