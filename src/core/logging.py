@@ -3,9 +3,8 @@ import os
 import sys
 
 import structlog
-from dependency_injector.wiring import Provide
 
-from src.settings import Container, Settings
+from src.settings import Settings
 
 
 def init_logging(settings: Settings, name: str = "log.log"):
