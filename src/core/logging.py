@@ -7,7 +7,7 @@ import structlog
 from src.settings import Settings
 
 
-def init_logging(settings: Settings, name: str = "log.log"):
+def init_logging(settings: Settings):
     settings.LOG_ROOT.mkdir(exist_ok=True)
     if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
         filepath.touch()
