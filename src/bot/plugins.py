@@ -12,5 +12,5 @@ class Registration(Plugin):
     async def Register(
         self, message: Message, registration: RegistrationService = Provide[Container.registration_service]
     ):
-        self.driver.reply_to(message, "Please provide the following information: ...")
-        registration.register("username", "first_name", "last_name")
+        await registration.register(**self.driver.get_user_info(message.user_id))
+        self.driver.reply_to(message, "Регистрация завершена")
