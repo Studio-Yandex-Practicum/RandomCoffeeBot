@@ -1,15 +1,14 @@
 FROM python:3.11
 
-RUN python -m pip install --upgrade pip
+RUN mkdir /app
 
 WORKDIR /app
 
-
-RUN pip install poetry==1.3.2
-COPY poetry.lock pyproject.toml ./
-RUN poetry config virtualenvs.create false
-RUN poetry install --without dev
+COPY requirements.txt /app
+RUN pip install --upgrade pip
+RUN pip install -r /app/requirements.txt --no-cache-dir
 
 COPY . .
+RUN pip install .
 
 CMD [ "python", "src/run.py" ]
