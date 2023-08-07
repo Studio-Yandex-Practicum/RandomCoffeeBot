@@ -1,3 +1,4 @@
+from logging import DEBUG
 from pathlib import Path
 
 from pydantic import DirectoryPath, PostgresDsn
@@ -25,7 +26,7 @@ class Settings(BaseSettings):
     BOT_TEAM: str
     SSL_VERIFY: bool = False
     # logging settings
-    LOG_MIN_ERROR_LEVEL: int | str = ...
+    LOG_MIN_ERROR_LEVEL: int = DEBUG
     LOGGER_NAME: str = "root"
     LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
 
