@@ -39,7 +39,7 @@ def init_logging(settings: Settings):
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.DEBUG)
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=settings.LOG_MIN_ERROR_LEVEL)
 
     structlog.configure(
         processors=processors,
