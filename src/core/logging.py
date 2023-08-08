@@ -9,7 +9,7 @@ from src.settings import Settings
 
 def init_logging(settings: Settings):
     settings.LOG_ROOT.mkdir(exist_ok=True)
-    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
+    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOGGER_NAME):
         filepath.touch()
 
     processors = [
@@ -39,7 +39,7 @@ def init_logging(settings: Settings):
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.DEBUG)
 
     structlog.configure(
         processors=processors,
