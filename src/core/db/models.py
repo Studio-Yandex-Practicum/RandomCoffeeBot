@@ -1,8 +1,8 @@
 from datetime import date
 from enum import StrEnum
 
-from sqlalchemy import String, func
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import ForeignKey, String, func
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 SERVER_DEFAULT_TIME = func.current_timestamp()
 
@@ -31,3 +31,16 @@ class User(Base):
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[StatusEnum] = mapped_column(nullable=False)
+
+    matches = relationship(
+        "UsersMatch",
+        primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)",
+        lazy="selectin",
+    )
+
+
+class UsersMatch(Base):
+    __tablename__ = "usersmatch"
+
+    matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
