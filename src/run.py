@@ -2,7 +2,7 @@ from bot.bot import init_bot
 from depends import Container
 
 
-def main():
+def main() -> None:
     container = Container()
     container.wire(packages=("src",))
     bot = init_bot(container.settings())

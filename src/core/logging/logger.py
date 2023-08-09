@@ -5,10 +5,11 @@ import sys
 import structlog
 from dependency_injector.wiring import Provide
 
-from src.settings import Container, Settings
+from src.depends import Container
+from src.settings import Settings
 
 
-def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):
+def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):  # type: ignore[no-untyped-def]
     settings.LOG_ROOT.mkdir(exist_ok=True)
     if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
         filepath.touch()
@@ -40,7 +41,7 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)  # type: ignore[attr-defined]
 
     structlog.configure(
         processors=processors,

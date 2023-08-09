@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from settings import Settings
 
 
-class Container(containers.DeclarativeContainer):
+class Container(containers.DeclarativeContainer):  # type: ignore[misc]
     settings = providers.Singleton(Settings)
     engine = providers.Singleton(create_async_engine, settings.provided.database_url, future=True, echo=True)
     sessionmaker = providers.Singleton(async_sessionmaker, engine, expire_on_commmit=False)

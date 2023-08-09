@@ -4,7 +4,7 @@ from bot.plugins import MyPlugin
 from settings import Settings as Settings_bot
 
 
-def init_bot(config: Settings_bot):
+def init_bot(config: Settings_bot) -> Bot:
     bot = Bot(
         settings=Settings(
             MATTERMOST_URL=config.MATTERMOST_URL,

@@ -8,7 +8,7 @@ ROOT_FOLDER = Path(__file__).parent.parent
 DSN_TEMPLATE = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
 
-class Settings(BaseSettings):
+class Settings(BaseSettings):  # type: ignore[misc]
     model_config = SettingsConfigDict(
         extra="ignore", case_sensitive=True, env_file=ROOT_FOLDER / ".env" if (ROOT_FOLDER / ".env").exists() else None
     )

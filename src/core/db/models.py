@@ -13,7 +13,7 @@ class StatusEnum(StrEnum):
     NOT_INVOLVED = "NOT_INVOLVED"
 
 
-class Base(DeclarativeBase):
+class Base(DeclarativeBase):  # type: ignore[misc]
     "Base class for models"
 
     id: Mapped[int] = mapped_column(primary_key=True)
