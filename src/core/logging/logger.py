@@ -9,7 +9,7 @@ from src.depends import Container
 from src.settings import Settings
 
 
-def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):  # type: ignore[no-untyped-def]
+def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):
     settings.LOG_ROOT.mkdir(exist_ok=True)
     if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
         filepath.touch()
