@@ -32,4 +32,3 @@ repos:
   rev: 'v1.4.1'
   hooks:
     - id: mypy
-      args: [--strict, --explicit-package-bases, --ignore-missing-imports, --config-file]
