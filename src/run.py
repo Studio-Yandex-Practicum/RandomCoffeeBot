@@ -4,7 +4,6 @@ from bot.bot import init_bot
 from depends import Container
 from src.core.logging import init_logging
 
-
 log = structlog.get_logger()
 
 
