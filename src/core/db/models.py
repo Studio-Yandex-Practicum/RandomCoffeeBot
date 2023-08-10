@@ -13,6 +13,12 @@ class StatusEnum(StrEnum):
     NOT_INVOLVED = "NOT_INVOLVED"
 
 
+class MatchStatusEnum(StrEnum):
+    ONGOING = "ONGOING"
+    SUCCESSFUL = "SUCCESSFUL"
+    UNSUCCESSFUL = "UNSUCCESSFUL"
+
+
 class Base(DeclarativeBase):
     "Base class for models"
 
@@ -32,10 +38,8 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
     status: Mapped[StatusEnum] = mapped_column(nullable=False)
 
-    matches = relationship(
-        "UsersMatch",
+    matches: Mapped[list["UsersMatch"]] = relationship(
         primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)",
-        lazy="selectin",
     )
 
 
@@ -44,3 +48,7 @@ class UsersMatch(Base):
 
     matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    status: Mapped[MatchStatusEnum] = mapped_column(
+        default=MatchStatusEnum.UNSUCCESSFUL,
+        nullable=False,
+    )
