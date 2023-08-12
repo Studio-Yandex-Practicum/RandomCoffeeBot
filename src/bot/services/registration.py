@@ -1,4 +1,5 @@
 from core.db.repository.user import UserRepository
+from src.core.db.models import User
 
 
 class RegistrationService:
@@ -7,5 +8,5 @@ class RegistrationService:
     def __init__(self, user_repository: UserRepository):
         self._user_repository = user_repository
 
-    async def register(self, username: str, first_name: str, last_name: str, **kwargs: dict):
-        await self._user_repository.create(username, first_name, last_name, **kwargs)
+    async def register(self, instance: User):
+        await self.self._user_repository.update_or_create(instance)
