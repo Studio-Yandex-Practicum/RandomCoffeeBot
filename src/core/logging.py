@@ -3,14 +3,13 @@ import os
 import sys
 
 import structlog
-from dependency_injector.wiring import Provide
 
-from src.settings import Container, Settings
+from src.settings import Settings
 
 
-def init_logging(settings: Settings = Provide[Container.settings], name: str = "log.log"):
+def init_logging(settings: Settings):
     settings.LOG_ROOT.mkdir(exist_ok=True)
-    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOG_NAME):
+    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOGGER_NAME):
         filepath.touch()
 
     processors = [
@@ -40,7 +39,7 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         )
     )
 
-    logging.basicConfig(handlers=[stream_handler, file_handler], level=logging.LOG_MIN_ERROR_LEVEL)
+    logging.basicConfig(handlers=[stream_handler, file_handler], level=settings.LOG_MIN_ERROR_LEVEL)
 
     structlog.configure(
         processors=processors,
@@ -49,5 +48,3 @@ def init_logging(settings: Settings = Provide[Container.settings], name: str = "
         context_class=dict,
         cache_logger_on_first_use=True,
     )
-
-    return structlog.get_logger(name)
