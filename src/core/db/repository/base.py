@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker
 
 from src.core.exceptions import exceptions
 
-Model = TypeVar("Model", Base, Any)
+Model = TypeVar("Model", bound=Base)
 
 
 class AbstractRepository(abc.ABC, Generic[Model]):
