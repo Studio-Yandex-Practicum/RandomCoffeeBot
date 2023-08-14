@@ -35,7 +35,6 @@ class Admin(Base):
 
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     user_id: Mapped[int] = mapped_column(String(50), unique=True, nullable=False)
-    status: Mapped[StatusEnum] = mapped_column(nullable=False)
 
 
 class User(Base):
