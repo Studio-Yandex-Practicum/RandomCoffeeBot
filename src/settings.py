@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     LOG_MIN_ERROR_LEVEL: int = DEBUG
     LOGGER_NAME: str = "root"
     LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
+    # admin settings
+    ADMIN: str
 
     @property
     def database_url(self) -> PostgresDsn:

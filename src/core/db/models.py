@@ -30,6 +30,14 @@ class Base(DeclarativeBase):
     __name__: Mapped[str]
 
 
+class Admin(Base):
+    __tablename__ = "admin"
+
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(String(50), unique=True, nullable=False)
+    status: Mapped[StatusEnum] = mapped_column(nullable=False)
+
+
 class User(Base):
     __tablename__ = "users"
 
