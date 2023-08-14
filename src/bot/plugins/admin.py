@@ -2,8 +2,9 @@ import re
 
 from dependency_injector.wiring import Container, Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
-from src.settings import Settings
+
 from src.core.db.repository.admin import AdminRepository
+from src.settings import Settings
 
 
 @inject
