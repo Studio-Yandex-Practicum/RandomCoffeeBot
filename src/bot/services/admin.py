@@ -1,9 +1,8 @@
-from src.core.db.repository.admin import AdminRepository
 from src.core.db.models import Admin
+from src.core.db.repository.admin import AdminRepository
 
 
 class AdminRegistration:
-
     def __init__(self, user_repository: AdminRepository):
         self._user_repository = user_repository
 
