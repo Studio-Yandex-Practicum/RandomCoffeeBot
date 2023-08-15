@@ -1,9 +1,9 @@
 from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
-from core.db.repository.user import UserRepository
-from settings import Settings
-from src.bot.services.registration import RegistrationService
+from .bot.services.registration import RegistrationService
+from .core.db.repository.user import UserRepository
+from .settings import Settings
 
 
 class Container(containers.DeclarativeContainer):

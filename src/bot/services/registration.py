@@ -1,5 +1,5 @@
-from core.db.repository.user import UserRepository
 from src.core.db.models import User
+from src.core.db.repository.user import UserRepository
 
 
 class RegistrationService:
