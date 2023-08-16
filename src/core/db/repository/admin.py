@@ -2,13 +2,15 @@ from sqlalchemy import select
 
 from src.core.db.models import Admin
 from src.core.db.repository.base import AbstractRepository
-from src.settings import Settings
 
 
 class AdminRepository(AbstractRepository):
     _model = Admin
 
-    async def get_admin_id(self, settings: Settings) -> int | None:
+    async def get_by_id(self, user_id: int) -> Admin | None:
         async with self._sessionmaker() as session:
-            instance = await session.scalar(select(self.user_id).where(self.username == settings.ADMIN))
+            instance = await session.scalar(select(self._model).where(self.user_id == user_id))
             return instance
+
+    async def create(self, instance: Admin) -> Admin:
+        return self.create(instance)
