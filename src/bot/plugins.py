@@ -4,9 +4,9 @@ from dataclasses import dataclass, fields
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
 
-from ..core.db.models import User
-from ..depends import Container
-from .services.registration import RegistrationService
+from src.bot.services.registration import RegistrationService
+from src.core.db.models import User
+from src.depends import Container
 
 
 @dataclass
