@@ -19,7 +19,7 @@ class MatchStatusEnum(StrEnum):
     UNSUCCESSFUL = "UNSUCCESSFUL"
 
 
-class Base(DeclarativeBase):  # type: ignore[misc]
+class Base(DeclarativeBase):
     "Base class for models"
 
     id: Mapped[int] = mapped_column(primary_key=True)
