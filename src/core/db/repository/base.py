@@ -1,5 +1,5 @@
 import abc
-from typing import Any, Generic, TypeVar
+from typing import Generic, TypeVar
 
 from models import Base
 from sqlalchemy import select, update
@@ -52,13 +52,13 @@ class AbstractRepository(abc.ABC, Generic[Model]):
             await session.commit()
         return instance
 
-    async def update_all(self, instances: list[Any]) -> list[dict[Model, Model]]:
+    async def update_all(self, instances: list[dict]) -> list[dict[Model, Model]]:
         """Обновляет несколько измененных объектов модели в базе."""
         async with self._sessionmaker() as session:
             await session.execute(update(self._model), instances)
         return instances
 
-    async def get_all(self) -> Any:
+    async def get_all(self) -> list[Model]:
         """Возвращает все объекты модели из базы данных."""
         async with self._sessionmaker() as session:
             objects = await session.scalars(select(self._model))
