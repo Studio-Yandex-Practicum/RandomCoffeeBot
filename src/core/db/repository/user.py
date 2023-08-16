@@ -1,6 +1,23 @@
+from sqlalchemy import select
+
 from src.core.db.models import User
 from src.core.db.repository.base import AbstractRepository
 
 
 class UserRepository(AbstractRepository[User]):
     _model = User
+
+    def __init__(self, username: str) -> None:
+        self.username = username
+
+    async def get_by_username(self, username: str) -> User:
+        async with self._sessionmaker() as session:
+            instance = await session.scalar(select(self._model).where(self.username == username))
+            return instance
+
+    async def create_or_update(self, instance: User) -> User:
+        """Создаёт нового или обновляет существующего пользователя в базе данных."""
+        db_instance = await self.get_by_username(instance.username)
+        if instance is None:
+            return await self.create(instance)
+        return await self.update(instance.id, db_instance)
