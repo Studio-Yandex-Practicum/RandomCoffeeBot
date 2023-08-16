@@ -1,7 +1,7 @@
 from mmpy_bot import Bot, Settings
 
-from bot.plugins import Registration
-from settings import Settings as Settings_bot
+from src.bot.plugins import Registration
+from src.settings import Settings as Settings_bot
 
 
 def init_bot(config: Settings_bot):
