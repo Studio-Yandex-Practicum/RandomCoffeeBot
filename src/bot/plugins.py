@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass, fields
+from typing import Self
 
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
@@ -16,7 +17,7 @@ class MattermostUserRegistrationInfo:
     last_name: str
 
     @classmethod
-    def from_dict(cls, user_data: dict[str, str]) -> MattermostUserRegistrationInfo:  # noqa: F821
+    def from_dict(cls, user_data: dict[str, str]) -> Self:
         return cls(
             **{attr: value for attr, value in user_data.items() if attr in (field.name for field in fields(cls))}
         )
