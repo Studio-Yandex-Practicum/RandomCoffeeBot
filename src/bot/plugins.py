@@ -1,5 +1,6 @@
 import re
 from dataclasses import dataclass, fields
+from typing import Self
 
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
@@ -16,7 +17,7 @@ class MattermostUserRegistrationInfo:
     last_name: str
 
     @classmethod
-    def from_dict(cls, user_data: dict):
+    def from_dict(cls, user_data: dict[str, str]) -> Self:
         return cls(
             **{attr: value for attr, value in user_data.items() if attr in (field.name for field in fields(cls))}
         )
@@ -27,7 +28,7 @@ class Registration(Plugin):
     @listen_to("Register", re.IGNORECASE)
     async def Register(
         self, message: Message, registration: RegistrationService = Provide[Container.registration_service]
-    ):
+    ) -> None:
         user_info = MattermostUserRegistrationInfo.from_dict(**self.driver.get_user_info(message.user_id))
         user_instance = User(
             username=user_info.username, first_name=user_info.first_name, last_name=user_info.last_name
