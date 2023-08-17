@@ -1,17 +1,17 @@
 from src.core.db.models import Admin
 from src.core.db.repository.admin import AdminRepository
-from src.settings import Settings
 
 
 class AdminService:
-    def __init__(self, admin_repository: AdminRepository):
+    def __init__(self, admin_repository: AdminRepository, default_admin: Admin):
         self._admin_repository = admin_repository
+        self._default_admin = default_admin
 
-    async def admin_settings(self, username: str, instance: Admin):
-        if username == Settings.ADMIN:
-            self.self._admin_repository.create(instance)
+    async def add_admin_if_in_settings(self, username: str, instance: Admin):
+        if username == self._default_admin:
+            await self._admin_repository.create(instance)
 
-    async def check_if_admin(self, usename: str, user_id: int, instance: Admin):
-        await self.admin_settings(usename, instance)
-        if self.self_admin_repository.get_by_id(user_id) is not None:
+    async def check_if_admin(self, username: str, user_id: int, instance: Admin):
+        await self.add_admin_if_in_settings(username, instance)
+        if self._admin_repository.get_by_user_id(user_id) is not None:
             return True

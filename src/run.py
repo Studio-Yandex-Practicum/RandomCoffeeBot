@@ -1,8 +1,8 @@
 import structlog
 
-from bot.bot import init_bot
-from depends import Container
+from src.bot.bot import init_bot
 from src.core.logging import init_logging
+from src.depends import Container
 
 log = structlog.get_logger()
 
