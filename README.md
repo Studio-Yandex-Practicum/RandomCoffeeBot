@@ -43,7 +43,7 @@ pre-commit install
   > согласно принятому в команде codestyle.
 
 ## Настройка
-Настройка .env 
+Настройка .env
 1. Запустите open-source платформу Mattermost командой
 ```
 docker-compose -f infra/docker-compose.tests.yml up -d
