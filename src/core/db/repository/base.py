@@ -1,12 +1,12 @@
 import abc
 from typing import Generic, TypeVar
 
-from models import Base
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from src.core.db.models import Base
 from src.core.exceptions import exceptions
 
 Model = TypeVar("Model", bound=Base)
