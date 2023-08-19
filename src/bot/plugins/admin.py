@@ -9,8 +9,8 @@ from src.depends import Container
 
 
 class BotAdmin(Plugin):
-    @inject
     @listen_to("Admin", re.IGNORECASE)
+    @inject
     async def admin(self, message: Message, admin_service: AdminService = Provide[Container.admin_service]):
         admin_instance = Admin(username=message.sender_name, user_id=message.user_id)
         if await admin_service.check_if_admin(message.sender_name, message.user_id, admin_instance):
