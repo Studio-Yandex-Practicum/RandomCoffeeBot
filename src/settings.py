@@ -30,7 +30,7 @@ class Settings(BaseSettings):
     LOGGER_NAME: str = "root"
     LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
     # admin settings
-    ADMIN: str
+    ADMIN_USERNAME: str
 
     @property
     def database_url(self) -> PostgresDsn:

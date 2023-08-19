@@ -13,4 +13,4 @@ class AdminRepository(AbstractRepository):
             return instance
 
     async def create(self, instance: Admin) -> Admin:
-        return self._create(instance)
+        return self.create(instance)
