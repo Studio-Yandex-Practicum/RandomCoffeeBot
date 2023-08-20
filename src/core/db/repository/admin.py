@@ -4,7 +4,7 @@ from src.core.db.models import Admin
 from src.core.db.repository.base import AbstractRepository
 
 
-class AdminRepository(AbstractRepository):
+class AdminRepository(AbstractRepository[Admin]):
     _model = Admin
 
     async def get_by_user_id(self, user_id: int) -> Admin | None:
