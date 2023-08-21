@@ -1,10 +1,11 @@
 from mmpy_bot import Bot, Settings
 
-from src.bot.plugins import Registration
+from src.bot.plugins.admin import BotAdmin
+from src.bot.plugins.registration import Registration
 from src.settings import Settings as Settings_bot
 
 
-def init_bot(config: Settings_bot):
+def init_bot(config: Settings_bot) -> Bot:
     bot = Bot(
         settings=Settings(
             MATTERMOST_URL=config.MATTERMOST_URL,
@@ -14,6 +15,6 @@ def init_bot(config: Settings_bot):
             BOT_TEAM=config.BOT_TEAM,
             SSL_VERIFY=config.SSL_VERIFY,
         ),
-        plugins=[Registration()],
+        plugins=[Registration(), BotAdmin()],
     )
     return bot
