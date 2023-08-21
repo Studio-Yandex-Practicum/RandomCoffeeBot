@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # database connection configuration
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
-    POSTGRES_DB: str = "coffee"
+    POSTGRES_DB: str = "postgres"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     # Mattermost bot settings
