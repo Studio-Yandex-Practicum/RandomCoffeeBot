@@ -6,7 +6,7 @@ from src.depends import Container
 log = structlog.get_logger()
 
 
-def main():
+def main() -> None:
     container = Container()
     container.wire(packages=("src",))
     bot = init_bot(container.settings())
