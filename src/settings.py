@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     # database connection configuration
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
-    POSTGRES_DB: str = "postgres"
+    POSTGRES_DB: str = "coffee"
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     # Mattermost bot settings
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     MATTERMOST_PORT: int = 8065
     MATTERMOST_API_PATH: str = "/api/v4"
     BOT_TOKEN: str
-    BOT_TEAM: str
+    BOT_TEAM: str = ""
     SSL_VERIFY: bool = False
     # logging settings
     LOG_MIN_ERROR_LEVEL: int = DEBUG
