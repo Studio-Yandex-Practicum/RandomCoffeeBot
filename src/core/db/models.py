@@ -30,13 +30,20 @@ class Base(DeclarativeBase):
     __name__: Mapped[str]
 
 
+class Admin(Base):
+    __tablename__ = "admin"
+
+    username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(String(50), unique=True, nullable=False)
+
+
 class User(Base):
     __tablename__ = "users"
 
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
-    status: Mapped[StatusEnum] = mapped_column(nullable=False)
+    status: Mapped[StatusEnum] = mapped_column(default=StatusEnum.NOT_INVOLVED, nullable=False)
 
     matches: Mapped[list["UsersMatch"]] = relationship(
         primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)",
@@ -48,7 +55,4 @@ class UsersMatch(Base):
 
     matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    status: Mapped[MatchStatusEnum] = mapped_column(
-        default=MatchStatusEnum.UNSUCCESSFUL,
-        nullable=False,
-    )
+    status: Mapped[MatchStatusEnum] = mapped_column(default=MatchStatusEnum.UNSUCCESSFUL, nullable=False)

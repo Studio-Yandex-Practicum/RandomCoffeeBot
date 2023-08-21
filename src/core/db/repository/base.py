@@ -6,9 +6,10 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import sessionmaker
 
+from src.core.db.models import Base
 from src.core.exceptions import exceptions
 
-Model = TypeVar("Model")
+Model = TypeVar("Model", bound=Base)
 
 
 class AbstractRepository(abc.ABC, Generic[Model]):
@@ -29,7 +30,7 @@ class AbstractRepository(abc.ABC, Generic[Model]):
         """Получает объект модели по ID. В случае отсутствия объекта бросает ошибку."""
         db_obj = await self.get_or_none(instance_id)
         if db_obj is None:
-            raise exceptions.ObjectNotFoundError(self._model, instance_id)
+            raise exceptions.ObjectNotFoundError(self._model.Base, instance_id)
         return db_obj
 
     async def create(self, instance: Model) -> Model:
@@ -51,7 +52,7 @@ class AbstractRepository(abc.ABC, Generic[Model]):
             await session.commit()
         return instance
 
-    async def update_all(self, instances: list[dict]) -> list[Model]:
+    async def update_all(self, instances: list[dict[Model, Model]]) -> list[dict[Model, Model]]:
         """Обновляет несколько измененных объектов модели в базе."""
         async with self._sessionmaker() as session:
             await session.execute(update(self._model), instances)
