@@ -27,7 +27,11 @@ def init_logging(settings: Settings) -> None:
     stream_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.processors.LogfmtRenderer(),
-            foreign_pre_chain=processors,
+            foreign_pre_chain=[
+                structlog.stdlib.add_log_level,
+                structlog.stdlib.add_logger_name,
+                structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
+            ],
         )
     )
     file_handler = logging.FileHandler(filepath, "w")
@@ -35,7 +39,11 @@ def init_logging(settings: Settings) -> None:
     file_handler.setFormatter(
         structlog.stdlib.ProcessorFormatter(
             processor=structlog.processors.JSONRenderer(),
-            foreign_pre_chain=processors,
+            foreign_pre_chain=[
+                structlog.stdlib.add_log_level,
+                structlog.stdlib.add_logger_name,
+                structlog.processors.TimeStamper(fmt="%Y-%m-%d %H:%M:%S"),
+            ],
         )
     )
 
