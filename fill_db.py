@@ -3,19 +3,10 @@ import random
 from contextlib import asynccontextmanager
 
 from faker import Faker
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
+from src.core.db.db import get_session
 from src.core.db.models import User, UsersMatch
-from src.settings import Settings
-
-engine = create_async_engine(Settings().database_url)
-
-
-async def get_session():
-    async_session = async_sessionmaker(engine, expire_on_commit=False)
-    async with async_session() as session:
-        yield session
-
 
 fake = Faker()
 
@@ -33,7 +24,7 @@ async def filling_users_in_db(session: async_sessionmaker[AsyncSession], num_use
 
 
 async def filling_users_match_in_db(session: async_sessionmaker[AsyncSession], num_pairs: int) -> None:
-    """Заполняем базу мэтчами"""
+    """Заполняем базу мэтчами. Пока используем этот скрипт, потом будем юзать сервис из репозитория"""
     users = await session.execute(User.__table__.select())
     users = users.all()
     pairs_created = set()  # все созданные пары сюда для отслеживания повоторений
