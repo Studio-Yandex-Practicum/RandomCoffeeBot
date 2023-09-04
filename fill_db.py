@@ -1,50 +1,81 @@
+import argparse
 import asyncio
 import random
-from contextlib import asynccontextmanager
 
 from faker import Faker
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.db.db import get_session
 from src.core.db.models import User, UsersMatch
+from src.core.db.repository.user import UserRepository
+from src.core.db.repository.usersmatch import UsersMatchRepository
+from src.depends import Container
 
 fake = Faker()
 
+container = Container()
 
-async def filling_users_in_db(session: async_sessionmaker[AsyncSession], num_users: int) -> None:
+
+def parse_arguments():
+    parser = argparse.ArgumentParser(description="Загрузка тестовых данных пользователей и их мэтчей в БД")
+    parser.add_argument(
+        "-u",
+        "--num_users",
+        type=int,
+        default=10,
+        help="Количество пользователей для добавления в БД (по умолчанию: 10)",
+    )
+    parser.add_argument(
+        "-p",
+        "--num_pairs",
+        type=int,
+        default=3,
+        help="Количество пар сопоставлений для каждого пользователя (по умолчанию: 3)",
+    )
+
+    return parser.parse_args()
+
+
+async def filling_users_in_db(user_repo: UserRepository, num_users: int) -> None:
     """Заполняем базу пользователями"""
     for _ in range(num_users):
         username = fake.user_name()
         first_name = fake.first_name()
         last_name = fake.last_name()
-
         user = User(username=username, first_name=first_name, last_name=last_name)
-        session.add(user)
-    await session.commit()
+
+        await user_repo.create(user)
 
 
-async def filling_users_match_in_db(session: async_sessionmaker[AsyncSession], num_pairs: int) -> None:
-    """Заполняем базу мэтчами. Пока используем этот скрипт, потом будем юзать сервис из репозитория"""
+async def filling_users_match_in_db(session: AsyncSession, match_repo: UsersMatchRepository, num_pairs: int) -> None:
+    """Заполняем базу мэтчами"""
     users = await session.execute(User.__table__.select())
     users = users.all()
-    pairs_created = set()  # все созданные пары сюда для отслеживания повоторений
+
+    if num_pairs != 0 and len(users) <= 1:
+        print("Недостаточно пользователей для создания пар. Требуется как минимум два пользователя.")
+        return
+
+    pairs_created = set()  # все созданные пары сюда для отслеживания повторений
 
     for user in users:
         for _ in range(num_pairs):
-            matched_user = random.choice(users)
-            while (user.id, matched_user.id) in pairs_created or (matched_user.id, user.id) in pairs_created:
-                matched_user = random.choice(users)
+            other_users = [
+                u
+                for u in users
+                if u.id != user.id and (user.id, u.id) not in pairs_created and (u.id, user.id) not in pairs_created
+            ]
+            if not other_users:
+                break
+            matched_user = random.choice(other_users)
+
             pairs_created.add((user.id, matched_user.id))
             pairs_created.add((matched_user.id, user.id))
 
             users_match = UsersMatch(matched_user_one=user.id, matched_user_two=matched_user.id)
-            session.add(users_match)
-    await session.commit()
+            await match_repo.create(users_match)
 
 
-async def delete_all_data(
-    session: async_sessionmaker[AsyncSession],
-) -> None:
+async def delete_all_data(session: AsyncSession) -> None:
     """Удаление всех данных User, UsersMatch из таблицы"""
     await session.execute(UsersMatch.__table__.delete())
     await session.execute(User.__table__.delete())
@@ -52,14 +83,21 @@ async def delete_all_data(
 
 
 async def main():
-    session_manager = asynccontextmanager(get_session)
-    async with session_manager() as session:
-        delete_old_data = input("Хотите очистить таблицу? (y/n): ").lower() == "y"
-        if delete_old_data:
-            await delete_all_data(session)
-        await filling_users_in_db(session, num_users=10)
-        await filling_users_match_in_db(session, num_pairs=3)
-        print("Тестовые данные загружены в БД.")
+    args = parse_arguments()
+
+    try:
+        async_Session = container.sessionmaker()
+        async with async_Session() as session:
+            delete_old_data = input("Хотите очистить таблицу? (y/n): ").lower() == "y"
+            if delete_old_data:
+                await delete_all_data(session)
+            user_repo = UserRepository(session)
+            match_repo = UsersMatchRepository(session)
+            await filling_users_in_db(user_repo, num_users=args.num_users)
+            await filling_users_match_in_db(session, match_repo, num_pairs=args.num_pairs)
+            print("Тестовые данные загружены в БД.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
 
 
 if __name__ == "__main__":
