@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel, HttpUrl
 
@@ -17,16 +17,16 @@ class Action(BaseModel):
 
 
 class Attachment(BaseModel):
-    fallback: Optional[str]
-    color: Optional[str]
-    pretext: Optional[str]
-    author_name: Optional[str]
-    author_link: Optional[HttpUrl]
-    author_icon: Optional[HttpUrl]
-    title: Optional[str]
-    title_link: Optional[HttpUrl]
-    text: Optional[str]
-    fields: Optional[List[Field]]
-    image_url: Optional[HttpUrl]
-    thumb_url: Optional[HttpUrl]
-    actions: Optional[List[Action]]
+    fallback: str | None
+    color: str | None
+    pretext: str | None
+    author_name: str | None
+    author_link: HttpUrl | None
+    author_icon: HttpUrl | None
+    title: str | None
+    title_link: HttpUrl | None
+    text: str | None
+    fields: List[Field] | None
+    image_url: HttpUrl | None
+    thumb_url: HttpUrl | None
+    actions: List[Action] | None
