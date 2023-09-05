@@ -2,6 +2,7 @@ import argparse
 import asyncio
 import random
 
+from dependency_injector import wiring
 from faker import Faker
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,7 +10,6 @@ from src.core.db.models import User, UsersMatch
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
 from src.depends import Container
-from dependency_injector import wiring
 
 fake = Faker()
 
@@ -104,5 +104,5 @@ async def main(
 if __name__ == "__main__":
     container = Container()
     container.wire(modules=[__name__])
-    
+
     asyncio.run(main())
