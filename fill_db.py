@@ -9,10 +9,9 @@ from src.core.db.models import User, UsersMatch
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
 from src.depends import Container
+from dependency_injector import wiring
 
 fake = Faker()
-
-container = Container()
 
 
 def parse_arguments():
@@ -82,17 +81,19 @@ async def delete_all_data(session: AsyncSession) -> None:
     await session.commit()
 
 
-async def main():
+@wiring.inject
+async def main(
+    sessionmaker: AsyncSession = wiring.Provide[Container.sessionmaker],
+    user_repo: UserRepository = wiring.Provide[Container.user_repository],
+    match_repo: UsersMatchRepository = wiring.Provide[Container.match_repository],
+):
     args = parse_arguments()
 
     try:
-        async_Session = container.sessionmaker()
-        async with async_Session() as session:
+        async with sessionmaker() as session:
             delete_old_data = input("Хотите очистить таблицу? (y/n): ").lower() == "y"
             if delete_old_data:
                 await delete_all_data(session)
-            user_repo = UserRepository(session)
-            match_repo = UsersMatchRepository(session)
             await filling_users_in_db(user_repo, num_users=args.num_users)
             await filling_users_match_in_db(session, match_repo, num_pairs=args.num_pairs)
             print("Тестовые данные загружены в БД.")
@@ -101,4 +102,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    container = Container()
+    container.wire(modules=[__name__])
+    
     asyncio.run(main())

@@ -5,6 +5,7 @@ from src.bot.services.admin import AdminService
 from src.bot.services.registration import RegistrationService
 from src.core.db.repository.admin import AdminRepository
 from src.core.db.repository.user import UserRepository
+from src.core.db.repository.usersmatch import UsersMatchRepository
 from src.settings import Settings
 
 
@@ -17,6 +18,7 @@ class Container(containers.DeclarativeContainer):
     # Repository
     admin_repository = providers.Factory(AdminRepository, sessionmaker=sessionmaker)
     user_repository = providers.Factory(UserRepository, sessionmaker=sessionmaker)
+    match_repository = providers.Factory(UsersMatchRepository, sessionmaker=sessionmaker)
     # Services
     admin_service = providers.Factory(
         AdminService, admin_repository=admin_repository, admin_username=settings.provided.ADMIN_USERNAME
