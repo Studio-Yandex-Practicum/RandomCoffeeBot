@@ -43,7 +43,9 @@ class User(Base):
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
-    status: Mapped[StatusEnum] = mapped_column(default=StatusEnum.NOT_INVOLVED, nullable=False)
+    status: Mapped[list["MatchingService"]] = relationship(
+        primaryjoin="or_(User.id==MatchingService.meeting_user_one, User.id==MatchingService.meeting_user_two)",
+    )
 
     matches: Mapped[list["UsersMatch"]] = relationship(
         primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)",
@@ -56,3 +58,11 @@ class UsersMatch(Base):
     matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     status: Mapped[MatchStatusEnum] = mapped_column(default=MatchStatusEnum.UNSUCCESSFUL, nullable=False)
+
+
+class MatchingService(Base):
+    __tablename__ = "matching"
+
+    meeting_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    meeting_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    status: Mapped[StatusEnum] = mapped_column(default=StatusEnum.NOT_INVOLVED, nullable=False)
