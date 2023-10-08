@@ -10,5 +10,5 @@ class MatchingService:
     def __init__(self, match_repository: UsersMatchRepository):
         self._match_repository = match_repository
 
-    async def create_pairs(self) -> None:
-        await self._match_repository.matching()
+    async def create_pairs(self) -> list:
+        return await self._match_repository.matching()
