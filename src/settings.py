@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import DirectoryPath, PostgresDsn
+from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
@@ -24,11 +24,12 @@ class Settings(BaseSettings):
     BOT_TOKEN: str
     BOT_TEAM: str = ""
     SSL_VERIFY: bool = False
+    CHANNEL_ID: str
     # logging settings
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"
     LOGGER_NAME: str = "root"
-    LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
+    LOG_ROOT: Path = ROOT_FOLDER / "logs"
     LOG_FILE_SIZE: int = 10 * 2**20
     LOG_FILES_TO_KEEP: int = 5
     # admin settings

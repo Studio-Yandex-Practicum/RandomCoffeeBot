@@ -22,7 +22,7 @@ Random Coffee bot for the Mattermost
 ## Установка зависимостей [](#зависимости)
 > [Официальная документация](https://python-poetry.org/docs/)
 
-1. Скронируйте репозиторий на локальную машину:
+1. Склонируйте репозиторий на локальную машину:
   ```
     git clone git@github.com:Studio-Yandex-Practicum/RandomCoffeeBot.git
   ```
@@ -68,7 +68,7 @@ Random Coffee bot for the Mattermost
   ```
     http://localhost:8065
   ```
-3. Пройдите регестрацию
+3. Пройдите регистрацию
 > **Note**
 > [Документация Mattermost](https://docs.mattermost.com/)
 4. Создайте бота. Add Bot Account

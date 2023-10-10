@@ -20,7 +20,7 @@ class MatchStatusEnum(StrEnum):
 
 
 class Base(DeclarativeBase):
-    "Base class for models"
+    """Base class for models"""
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[date] = mapped_column(server_default=SERVER_DEFAULT_TIME, nullable=False)

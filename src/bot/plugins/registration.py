@@ -11,7 +11,7 @@ from src.depends import Container
 class Registration(Plugin):
     @listen_to("Register", re.IGNORECASE)
     @inject
-    async def Register(
+    async def register(
         self, message: Message, registration: RegistrationService = Provide[Container.registration_service]
     ) -> None:
         user_data = self.driver.get_user_info(message.user_id)

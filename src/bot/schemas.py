@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, HttpUrl
 
@@ -10,23 +10,29 @@ class Field(BaseModel):
 
 
 class Action(BaseModel):
+    id: str
     name: str
-    text: str
     type: str
-    value: str
+    integration: dict
+
+    def to_dict(self):
+        return dict(self)
 
 
 class Attachment(BaseModel):
-    fallback: str | None
-    color: str | None
-    pretext: str | None
-    author_name: str | None
-    author_link: HttpUrl | None
-    author_icon: HttpUrl | None
-    title: str | None
-    title_link: HttpUrl | None
-    text: str | None
-    fields: List[Field] | None
-    image_url: HttpUrl | None
-    thumb_url: HttpUrl | None
-    actions: List[Action] | None
+    fallback: Optional[str] = None
+    color: Optional[str] = None
+    pretext: Optional[str] = None
+    author_name: Optional[str] = None
+    author_link: Optional[HttpUrl] = None
+    author_icon: Optional[HttpUrl] = None
+    title: Optional[str] = None
+    title_link: Optional[HttpUrl] = None
+    text: Optional[str] = None
+    fields: Optional[List[Field]] = None
+    image_url: Optional[HttpUrl] = None
+    thumb_url: Optional[HttpUrl] = None
+    actions: Optional[List[dict]] = None
+
+    def to_dict(self):
+        return dict(self)

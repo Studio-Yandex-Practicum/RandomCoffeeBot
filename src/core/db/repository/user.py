@@ -7,6 +7,11 @@ from src.core.db.repository.base import AbstractRepository
 class UserRepository(AbstractRepository[User]):
     _model = User
 
+    # async def get_all(self) -> List[User] | None:
+    #     async with self._sessionmaker() as session:
+    #         instance = await session.scalar(select(self._model))
+    #         return instance
+    #
     async def get_by_username(self, username: str) -> User | None:
         async with self._sessionmaker() as session:
             instance = await session.scalar(select(self._model).where(self._model.username == username))
@@ -17,4 +22,4 @@ class UserRepository(AbstractRepository[User]):
         db_instance = await self.get_by_username(instance.username)
         if db_instance is None:
             return await self.create(instance)
-        return await self.update(instance.id, db_instance)
+        return await self.update(db_instance.id, instance)
