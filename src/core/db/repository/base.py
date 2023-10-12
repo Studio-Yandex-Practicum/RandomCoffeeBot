@@ -56,6 +56,7 @@ class AbstractRepository(abc.ABC, Generic[Model]):
         """Обновляет несколько измененных объектов модели в базе."""
         async with self._sessionmaker() as session:
             await session.execute(update(self._model), instances)
+            await session.commit()
         return instances
 
     async def get_all(self) -> list[Model]:

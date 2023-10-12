@@ -18,3 +18,12 @@ class UserRepository(AbstractRepository[User]):
         if db_instance is None:
             return await self.create(instance)
         return await self.update(instance.id, db_instance)
+
+    async def get_by_status(self, status: str) -> list[User] | None:
+        """Получает пользователей по статусу участия во встречах."""
+        async with self._sessionmaker() as session:
+            return await session.scalars(
+                select(self._model).where(
+                    self._model.status == status
+                )
+            )
