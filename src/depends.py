@@ -25,4 +25,6 @@ class Container(containers.DeclarativeContainer):
         AdminService, admin_repository=admin_repository, admin_username=settings.provided.ADMIN_USERNAME
     )
     registration_service = providers.Factory(RegistrationService, user_repository=user_repository)
-    matching_service = providers.Factory(MatchingService, user_repository=user_repository, match_repository=match_repository)
+    matching_service = providers.Factory(
+        MatchingService, user_repository=user_repository, match_repository=match_repository
+    )

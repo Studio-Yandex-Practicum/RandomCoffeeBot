@@ -6,11 +6,7 @@ from src.core.db.repository.usersmatch import UsersMatchRepository
 class MatchingService:
     """Сервис представляющий логику подбора пар между пользователями."""
 
-    def __init__(
-        self,
-        user_repository: UserRepository,
-        match_repository: UsersMatchRepository
-    ) -> None:
+    def __init__(self, user_repository: UserRepository, match_repository: UsersMatchRepository) -> None:
         self._user_repository = user_repository
         self._match_repository = match_repository
 

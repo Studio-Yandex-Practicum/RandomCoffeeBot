@@ -22,8 +22,4 @@ class UserRepository(AbstractRepository[User]):
     async def get_by_status(self, status: str) -> list[User] | None:
         """Получает пользователей по статусу участия во встречах."""
         async with self._sessionmaker() as session:
-            return await session.scalars(
-                select(self._model).where(
-                    self._model.status == status
-                )
-            )
+            return await session.scalars(select(self._model).where(self._model.status == status))
