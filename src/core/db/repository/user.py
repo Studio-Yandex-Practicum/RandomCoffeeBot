@@ -1,7 +1,8 @@
-from sqlalchemy import select
+from sqlalchemy import and_, select
 
-from src.core.db.models import User
+from src.core.db.models import StatusEnum, User
 from src.core.db.repository.base import AbstractRepository
+from src.core.exceptions.exceptions import NoUserFoundError
 
 
 class UserRepository(AbstractRepository[User]):
@@ -23,3 +24,19 @@ class UserRepository(AbstractRepository[User]):
         """Получает пользователей по статусу участия во встречах."""
         async with self._sessionmaker() as session:
             return await session.scalars(select(self._model).where(self._model.status == status))
+
+    async def get_free_user(self) -> User | None:
+        """Получает пользователя ожидающего встречи."""
+        async with self._sessionmaker() as session:
+            return await session.scalar(select(self._model).where(self._model.status == StatusEnum.WAITING_MEETING))
+
+    async def get_without_current(self, user: User) -> User:
+        """Возвращает пользователя со статусом ожидания встречи, исключая текущего пользователя."""
+        async with self._sessionmaker() as session:
+            if user_current := await session.scalar(
+                select(self._model).where(
+                    and_(self._model.id != user.id, self._model.status == StatusEnum.WAITING_MEETING)
+                )
+            ):
+                return user_current
+            raise NoUserFoundError(user.id)
