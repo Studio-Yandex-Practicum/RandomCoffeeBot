@@ -1,0 +1,57 @@
+name: Stage backend build and deploy
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+env:
+  REGISTRY: ghcr.io
+  REP_OWNER: studio-yandex-practicum
+  IMAGE_NAME: image_name # fix
+  DEPLOY_PATH: /randomcoffeebot/full
+  WORK_DIR: /app
+
+defaults:
+  run:
+    working-directory: .
+
+jobs:
+  build-and-push-image-to-github-packages:
+    name: Push backend Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    environment:
+      name: stage_deploy
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: develop
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Sanitize repo slug
+        uses: actions/github-script@v6
+        id: repo_slug
+        with:
+          result-encoding: string
+          script: return 'ghcr.io/${{ github.repository }}'.toLowerCase()
+      - name: Push Stage to GitHub Container Registry
+        uses: docker/build-push-action@v4
+        with:
+          context: "{{defaultContext}}"
+          push: true
+          tags: ${{ steps.repo_slug.outputs.result }}:stage
