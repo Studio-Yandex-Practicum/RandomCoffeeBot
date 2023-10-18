@@ -10,12 +10,10 @@ on:
       - master
       - develop
 
+  workflow_dispatch:
+
 env:
   REGISTRY: ghcr.io
-  REP_OWNER: studio-yandex-practicum
-  IMAGE_NAME: image_name # fix
-  DEPLOY_PATH: /randomcoffeebot/full
-  WORK_DIR: /app
 
 defaults:
   run:
