@@ -16,7 +16,10 @@ class Registration(Plugin):
     ) -> None:
         user_data = self.driver.get_user_info(message.user_id)
         user_instance = User(
-            username=user_data["username"], first_name=user_data["first_name"], last_name=user_data["last_name"]
+            user_id=user_data["id"],
+            username=user_data["username"],
+            first_name=user_data["first_name"],
+            last_name=user_data["last_name"],
         )
         await registration.register(user_instance)
         self.driver.reply_to(message, "Регистрация завершена")

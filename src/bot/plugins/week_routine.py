@@ -1,39 +1,73 @@
 import re
 
-import schedule
-from dependency_injector.wiring import inject
+import structlog
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
 
-from src.bot.constants.const_message import every_week_message, friday_time_sending_message
-from src.settings import Settings
+from src.bot.schemas import Action, Actions, Attachment, Integration
+from src.bot.services.week_routine import WeekRoutineService
+from src.depends import Container
+
+FRIDAY_TIME_SENDING_MESSAGE = 12
+DAY_OF_WEEK_FRI = "thu"
+LOGGER = structlog.get_logger()
+SCHEDULER = AsyncIOScheduler()
 
 
 class WeekRoutine(Plugin):
-    @inject
-    def send_message(self, users_id=None, title: str = "Еженедельный опрос") -> None:
-        """Функция отправки еженедельного сообщения (создания поста)"""
-        if users_id is None:
-            users_id = [Settings().CHANNEL_ID]
-        for user_id in users_id:
-            self.driver.create_post(channel_id=user_id, message=title, props={"attachments": [every_week_message]})
+    action_yes = Actions(
+        id="Yes", name="Да", type="botton", integration=Integration(url="", context=Action(action="yes"))
+    )
+
+    action_no = Actions(
+        id="No", name="Нет", type="botton", integration=Integration(url="", context=Action(action="no"))
+    )
+
+    every_friday_message = Attachment(
+        text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
+    )
 
     @listen_to("send_asking_message", re.IGNORECASE)
     @inject
-    def send_asking_message(self, message: Message):
+    async def send_asking_message(
+        self, message: Message, routine: WeekRoutineService = Provide[Container.week_routine_service]
+    ):
         """Отправка сообщения по команде в канал"""
-        self.send_message(title="Тестовая отправка")
+        await routine.send_message(self, attachments=self.every_friday_message, title="Тестовая отправка")
 
-    @listen_to("start_week_routines")
     @inject
-    def week_routine(self, message):
+    async def start_routine(
+        self,
+        routine: WeekRoutineService = Provide[Container.week_routine_service],
+        attachments: Attachment = every_friday_message,
+        title: str = "Еженедельный опрос",
+    ):
         """Функция запуска еженедельных рутин"""
+        await routine.send_message(self, attachments=attachments, title=title)
 
-        users_id = [
-            "iqgg313ew3fppydtet45myk5qa",  # получить список id пользователей.
-        ]
-        schedule.every().friday.at(friday_time_sending_message).do(self.send_message, users_id).tag("friday")
+    def on_start(self):
+        SCHEDULER.add_job(
+            self.start_routine,
+            "cron",
+            day_of_week=DAY_OF_WEEK_FRI,
+            hour=FRIDAY_TIME_SENDING_MESSAGE,
+            kwargs=dict(attachments=self.every_friday_message, title="Еженедельный пятничный опрос"),
+        )
+        # -----------------------------------для теста:
+        # SCHEDULER.add_job(
+        #     self.start_routine,
+        #     'interval', seconds=20,
+        #     kwargs=dict(
+        #         attachments=self.every_friday_message,
+        #         title="Еженедельный пятничный опрос"
+        #     )
+        # )
+        # -----------------------------------
+
+        SCHEDULER.start()
 
     @listen_to("stop jobs", re.IGNORECASE)
     def cancel_jobs(self, message):
-        schedule.clear()
+        SCHEDULER.shutdown()
         self.driver.reply_to(message, "All jobs cancelled.")

@@ -3,6 +3,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.bot.services.admin import AdminService
 from src.bot.services.registration import RegistrationService
+from src.bot.services.week_routine import WeekRoutineService
 from src.core.db.repository.admin import AdminRepository
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
@@ -24,3 +25,4 @@ class Container(containers.DeclarativeContainer):
         AdminService, admin_repository=admin_repository, admin_username=settings.provided.ADMIN_USERNAME
     )
     registration_service = providers.Factory(RegistrationService, user_repository=user_repository)
+    week_routine_service = providers.Factory(WeekRoutineService, user_repository=user_repository)

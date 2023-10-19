@@ -7,11 +7,11 @@ from src.core.db.repository.base import AbstractRepository
 class UserRepository(AbstractRepository[User]):
     _model = User
 
-    # async def get_all(self) -> List[User] | None:
-    #     async with self._sessionmaker() as session:
-    #         instance = await session.scalar(select(self._model))
-    #         return instance
-    #
+    async def get_all_chat_id(self) -> list[str] | None:
+        async with self._sessionmaker() as session:
+            instance = await session.execute(select(self._model.user_id))
+            return instance.scalars().all()
+
     async def get_by_username(self, username: str) -> User | None:
         async with self._sessionmaker() as session:
             instance = await session.scalar(select(self._model).where(self._model.username == username))
