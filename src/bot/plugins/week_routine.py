@@ -9,8 +9,8 @@ from src.bot.schemas import Action, Actions, Attachment, Integration
 from src.bot.services.week_routine import WeekRoutineService
 from src.depends import Container
 
-FRIDAY_TIME_SENDING_MESSAGE = 12
-DAY_OF_WEEK_FRI = "thu"
+FRIDAY_TIME_SENDING_MESSAGE = 11
+DAY_OF_WEEK_FRI = "fri"
 LOGGER = structlog.get_logger()
 SCHEDULER = AsyncIOScheduler()
 
