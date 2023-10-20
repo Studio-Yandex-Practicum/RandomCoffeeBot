@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel, HttpUrl
 
 
@@ -35,7 +33,7 @@ class Attachment(BaseModel):
     title: str | None = None
     title_link: HttpUrl | None = None
     text: str | None = None
-    fields: List[Field] | None = None
+    fields: list[Field] | None = None
     image_url: HttpUrl | None = None
     thumb_url: HttpUrl | None = None
-    actions: List[Actions] | None = None
+    actions: list[Actions] | None = None

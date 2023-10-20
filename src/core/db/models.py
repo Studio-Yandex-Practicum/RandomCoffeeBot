@@ -34,7 +34,7 @@ class Admin(Base):
     __tablename__ = "admin"
 
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    user_id: Mapped[int] = mapped_column(String(50), unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(String(200), unique=True, nullable=False)
 
 
 class User(Base):

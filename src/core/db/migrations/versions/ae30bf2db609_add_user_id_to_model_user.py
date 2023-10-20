@@ -20,7 +20,7 @@ def upgrade():
     op.create_table(
         "admin",
         sa.Column("username", sa.String(length=50), nullable=False),
-        sa.Column("user_id", sa.String(length=50), nullable=False),
+        sa.Column("user_id", sa.String(length=200), nullable=False),
         sa.Column("id", sa.Integer(), nullable=False),
         sa.Column("created_at", sa.Date(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
         sa.Column("updated_at", sa.Date(), server_default=sa.text("CURRENT_TIMESTAMP"), nullable=False),
@@ -28,7 +28,7 @@ def upgrade():
         sa.UniqueConstraint("user_id"),
         sa.UniqueConstraint("username"),
     )
-    op.add_column("users", sa.Column("user_id", sa.String(length=50), nullable=False))
+    op.add_column("users", sa.Column("user_id", sa.String(length=200), nullable=False))
     op.create_unique_constraint(None, "users", ["user_id"])
     # ### end Alembic commands ###
 
