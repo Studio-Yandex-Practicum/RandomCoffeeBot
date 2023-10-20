@@ -37,10 +37,11 @@ def parse_arguments():
 async def filling_users_in_db(user_repo: UserRepository, num_users: int) -> None:
     """Заполняем базу пользователями"""
     for _ in range(num_users):
+        user_id = fake.bothify(text="###????????????????#??????")
         username = fake.user_name()
         first_name = fake.first_name()
         last_name = fake.last_name()
-        user = User(username=username, first_name=first_name, last_name=last_name)
+        user = User(user_id=user_id, username=username, first_name=first_name, last_name=last_name)
 
         await user_repo.create(user)
 
