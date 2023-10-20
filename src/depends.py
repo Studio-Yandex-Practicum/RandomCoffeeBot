@@ -3,8 +3,8 @@ from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.bot.services.admin import AdminService
+from src.bot.services.notify_service import NotifyService
 from src.bot.services.registration import RegistrationService
-from src.bot.services.week_routine import NotifyService
 from src.core.db.repository.admin import AdminRepository
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
@@ -27,4 +27,5 @@ class Container(containers.DeclarativeContainer):
     )
     registration_service = providers.Factory(RegistrationService, user_repository=user_repository)
     week_routine_service = providers.Factory(NotifyService, user_repository=user_repository)
+    # Scheduler
     scheduler = providers.Singleton(AsyncIOScheduler)
