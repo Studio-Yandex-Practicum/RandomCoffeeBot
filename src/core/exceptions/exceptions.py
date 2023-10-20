@@ -15,11 +15,3 @@ class ObjectAlreadyExistsError(Exception):
 
     def __str__(self) -> str:
         return self.detail
-
-
-class NoUserFoundError(Exception):
-    def __init__(self, object_id: int) -> None:
-        self.detail = f"Невозможно создать пару для пользователя с id {object_id}."
-
-    def __str__(self) -> str:
-        return self.detail
