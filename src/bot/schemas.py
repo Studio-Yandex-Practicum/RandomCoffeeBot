@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel, HttpUrl
 
 
@@ -10,23 +8,32 @@ class Field(BaseModel):
 
 
 class Action(BaseModel):
+    action: str = ""
+
+
+class Integration(BaseModel):
+    url: str
+    context: Action
+
+
+class Actions(BaseModel):
+    id: str
     name: str
-    text: str
-    type: str
-    value: str
+    type: str | None
+    integration: Integration
 
 
 class Attachment(BaseModel):
-    fallback: str | None
-    color: str | None
-    pretext: str | None
-    author_name: str | None
-    author_link: HttpUrl | None
-    author_icon: HttpUrl | None
-    title: str | None
-    title_link: HttpUrl | None
-    text: str | None
-    fields: List[Field] | None
-    image_url: HttpUrl | None
-    thumb_url: HttpUrl | None
-    actions: List[Action] | None
+    fallback: str | None = None
+    color: str | None = None
+    pretext: str | None = None
+    author_name: str | None = None
+    author_link: HttpUrl | None = None
+    author_icon: HttpUrl | None = None
+    title: str | None = None
+    title_link: HttpUrl | None = None
+    text: str | None = None
+    fields: list[Field] | None = None
+    image_url: HttpUrl | None = None
+    thumb_url: HttpUrl | None = None
+    actions: list[Actions] | None = None

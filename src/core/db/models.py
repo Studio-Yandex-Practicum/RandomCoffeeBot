@@ -20,7 +20,7 @@ class MatchStatusEnum(StrEnum):
 
 
 class Base(DeclarativeBase):
-    "Base class for models"
+    """Base class for models"""
 
     id: Mapped[int] = mapped_column(primary_key=True)
     created_at: Mapped[date] = mapped_column(server_default=SERVER_DEFAULT_TIME, nullable=False)
@@ -34,12 +34,13 @@ class Admin(Base):
     __tablename__ = "admin"
 
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
-    user_id: Mapped[int] = mapped_column(String(50), unique=True, nullable=False)
+    user_id: Mapped[int] = mapped_column(String(200), unique=True, nullable=False)
 
 
 class User(Base):
     __tablename__ = "users"
 
+    user_id: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     username: Mapped[str] = mapped_column(String(50), unique=True, nullable=False)
     first_name: Mapped[str] = mapped_column(String(50), nullable=False)
     last_name: Mapped[str] = mapped_column(String(50), nullable=False)
