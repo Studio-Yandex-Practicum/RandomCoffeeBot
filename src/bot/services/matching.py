@@ -18,12 +18,11 @@ class MatchingService:
         """Запускает создание метчей."""
         matches: list[UsersMatch] = []
         while user_one := await self._user_repository.get_free_user():
-            if user_two := await self._user_repository.get_without_current(user_one):
-                matches.append(match := await self._match_repository.make_match_for_user(user_one, user_two))
-                for user in (user_one, user_two):
-                    user.status = StatusEnum.IN_MEETING
-                    user.matches.append(match)
-                    await self._user_repository.update(user.id, user)
-            else:
-                log.info(f"Невозможно создать пару для пользователя с id {user.id}.")
+            if not (user_two := await self._user_repository.get_suitable_pair(user_one)):
+                return log.info(f"Невозможно создать пару для пользователя с id {user_one.id}.")
+            matches.append(match := await self._match_repository.make_match_for_user(user_one, user_two))
+            for user in (user_one, user_two):
+                user.status = StatusEnum.IN_MEETING
+                user.matches.append(match)
+                await self._user_repository.update(user.id, user)
         return matches

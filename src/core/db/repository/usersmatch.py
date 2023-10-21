@@ -1,4 +1,4 @@
-from sqlalchemy import and_, or_, select
+from sqlalchemy import select
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
@@ -16,22 +16,12 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
         )
 
     async def check_unique_matching(self, user_one: User, user_two: User):
+        """Проверяет уникальность пар пользователей."""
         async with self._sessionmaker() as session:
             if match := await session.scalar(
-                select(self._model)
-                .where(
-                    or_(
-                        and_(
-                            self._model.matched_user_one == user_one.id,
-                            self._model.matched_user_two == user_two.id,
-                        ),
-                        and_(
-                            self._model.matched_user_one == user_two.id,
-                            self._model.matched_user_two == user_one.id,
-                        ),
-                    )
-                )
-                .filter(
+                select(self._model).where(
+                    (self._model.matched_user_one == user_one.id) & (self._model.matched_user_two == user_two.id)
+                    | (self._model.matched_user_one == user_two.id) & (self._model.matched_user_two == user_one.id),
                     self._model.status == MatchStatusEnum.ONGOING,
                 )
             ):

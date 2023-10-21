@@ -1,4 +1,4 @@
-from sqlalchemy import or_, select
+from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from src.core.db.models import MatchStatusEnum, StatusEnum, User, UsersMatch
@@ -40,17 +40,18 @@ class UserRepository(AbstractRepository[User]):
                 .limit(1)
             )
 
-    async def get_without_current(self, user: User) -> User | None:
-        """Возвращает пользователя со статусом ожидания встречи, исключая текущего пользователя."""
+    async def get_suitable_pair(self, user: User) -> User | None:
+        """Возвращает подходящего для встречи пользователя."""
         async with self._sessionmaker() as session:
             return await session.scalar(
                 select(self._model)
                 .options(joinedload(self._model.matches))
                 .where(self._model.id != user.id, self._model.status == StatusEnum.WAITING_MEETING)
-                .join(self._model.matches)
-                .filter(
-                    or_(UsersMatch.matched_user_one != user.id, UsersMatch.matched_user_two != user.id),
-                    UsersMatch.status != MatchStatusEnum.ONGOING,
+                .outerjoin(self._model.matches)
+                .where(
+                    UsersMatch.id.is_(None)
+                    | (UsersMatch.matched_user_one != user.id)
+                    | (UsersMatch.matched_user_two != user.id) & (UsersMatch.status != MatchStatusEnum.ONGOING)
                 )
                 .limit(1)
             )
