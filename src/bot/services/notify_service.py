@@ -26,3 +26,6 @@ class NotifyService:
                 logger.info("Сообщение отправлено.")
             except NotEnoughPermissions:
                 logger.error(f"Пользователя с таким user_id {user_id} нет в matter_most")
+
+    async def change_users_status(self, user_id: str):
+        await self._user_repository.set_waiting_meeting_status(user_id)
