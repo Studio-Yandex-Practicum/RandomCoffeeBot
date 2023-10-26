@@ -26,3 +26,7 @@ class MatchingService:
                 user.matches.append(match)
                 await self._user_repository.update(user.id, user)
         return matches
+
+    async def run_closing_meetings(self):
+        """Запускает закрытие встреч."""
+        return await self._match_repository.closing_meetings()
