@@ -4,9 +4,10 @@ import structlog
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import ActionEvent, Plugin, WebHookEvent, listen_to, listen_webhook
 
-from src.bot.schemas import Action, Actions, Attachment, Integration
+from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.bot.services.notify_service import NotifyService
 from src.depends import Container
+from src.endpoints import Endpoints
 
 FRIDAY_TIME_SENDING_MESSAGE = 11
 DAY_OF_WEEK_FRI = "fri"
@@ -14,22 +15,26 @@ LOGGER = structlog.get_logger()
 
 
 class WeekRoutine(Plugin):
-    action_yes = Actions(
-        id="Yes",
-        name="Да",
-        type="button",
-        integration=Integration(
-            url="http://127.0.0.1:8579/hooks/add_to_meeting", context=Action(action="add_to_meeting")
-        ),
-    )
+    @inject
+    def create_message(self, endpoints: Endpoints = Provide[Container.endpoints]):
+        action_yes = Actions(
+            id="yes",
+            name="Да",
+            type="button",
+            integration=Integration(url=endpoints.add_to_meeting, context=Context(action="yes")),
+        )
 
-    action_no = Actions(
-        id="No", name="Нет", type="button", integration=Integration(url="", context=Action(action="no"))
-    )
+        action_no = Actions(
+            id="No",
+            name="Нет",
+            type="button",
+            integration=Integration(url=endpoints.not_meeting, context=Context(action="no")),
+        )
 
-    every_friday_message = Attachment(
-        text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
-    )
+        every_friday_message = Attachment(
+            text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
+        )
+        return every_friday_message
 
     @inject
     def on_start(
@@ -37,18 +42,19 @@ class WeekRoutine(Plugin):
         notify_service: NotifyService = Provide[Container.week_routine_service,],
         scheduler=Provide[Container.scheduler,],
     ):
+        attachments = self.create_message()
         scheduler.add_job(
             notify_service.notify_all_users,
             "interval",
             seconds=20,
-            kwargs=dict(plugin=self, attachments=self.every_friday_message, title="Еженедельный пятничный опрос"),
+            kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
         )
         # scheduler.add_job(
         #     notify_service.notify_all_users,
         #     "cron",
         #     day_of_week=DAY_OF_WEEK_FRI,
         #     hour=FRIDAY_TIME_SENDING_MESSAGE,
-        #     kwargs=dict(plugin=self, attachments=self.every_friday_message, title="Еженедельный пятничный опрос"),
+        #     kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
         # )
 
         scheduler.start()
@@ -59,15 +65,36 @@ class WeekRoutine(Plugin):
         scheduler.shutdown()
         self.driver.reply_to(message, "All jobs cancelled.")
 
-    @listen_webhook("add_to_meeting")
-    async def add_to_meeting(self, event: WebHookEvent):
+    @inject
+    async def _change_user_status(
+        self, user_id: str, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ):
+        await notify_service.change_user_status(user_id)
+
+    @listen_webhook("yes")
+    async def add_to_meeting(
+        self,
+        event: WebHookEvent,
+    ):
+        if isinstance(event, ActionEvent):
+            await self._change_user_status(event.channel_id)
+            self.driver.respond_to_web(
+                event,
+                {
+                    "update": {"message": "До встречи!", "props": {}},
+                },
+            )
+        else:
+            self.driver.create_post(event.body["channel_id"], f"Webhook '{event.webhook_id}' triggered!")
+
+    @listen_webhook("no")
+    async def no(self, event: WebHookEvent):
         if isinstance(event, ActionEvent):
             self.driver.respond_to_web(
                 event,
                 {
-                    # You can add any kind of JSON-serializable data here
-                    "message": "hello!",
+                    "update": {"message": "На следующей неделе отправлю новое предложение.", "props": {}},
                 },
             )
         else:
-            self.driver.create_post(event.body["channel_id"], f"Webhook {event.webhook_id} triggered!")
+            self.driver.create_post(event.body["channel_id"], f"Webhook '{event.webhook_id}' triggered!")

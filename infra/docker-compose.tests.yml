@@ -7,6 +7,8 @@ services:
       - ./config:/mattermost/config
     ports:
       - "8065:8065"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   db:
     container_name: "db"

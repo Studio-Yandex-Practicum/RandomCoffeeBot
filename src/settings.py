@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore", case_sensitive=True, env_file=ROOT_FOLDER / ".env" if (ROOT_FOLDER / ".env").exists() else None
     )
-    HOST: str = "http://localhost"
+    HOST: str = "http://host.docker.internal:8579/"
     # database connection configuration
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
@@ -22,11 +22,12 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     # Mattermost bot settings
+    MM_SERVICESETTINGS_SITEURL: str = "http://localhost:8065/"
     MATTERMOST_URL: str = "http://localhost"
     MATTERMOST_PORT: int = 8065
     MATTERMOST_API_PATH: str = "/api/v4"
     WEBHOOK_HOST_ENABLED: bool = True
-    WEBHOOK_HOST_URL: str = HOST
+    WEBHOOK_HOST_URL: str = "http://localhost"
     WEBHOOK_HOST_PORT: int = 8579
     BOT_TOKEN: str
     BOT_TEAM: str = ""
@@ -51,15 +52,3 @@ class Settings(BaseSettings):
             port=self.DB_PORT,
             db_name=self.POSTGRES_DB,
         )
-
-
-# class Endpoints:
-#     def __init__(self, host: str):
-#         self._host = host
-#
-#     def host_append(self, v: str):
-#         return urljoin(self._host, v)  # TODO: Просто их плюсовать плохой вариант, найти лучше.
-#
-#     @property
-#     def add_to_meeting(self):
-#         return self.host_append("/add_to_meeting/")
