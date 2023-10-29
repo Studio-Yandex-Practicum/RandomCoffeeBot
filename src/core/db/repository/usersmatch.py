@@ -38,3 +38,8 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             )
             await session.commit()
             return updated.all()
+
+    async def get_by_status(self, status: str) -> list[UsersMatch]:
+        """Получает встречи по статусу."""
+        async with self._sessionmaker() as session:
+            return await session.scalars(select(self._model).where(self._model.status == status))

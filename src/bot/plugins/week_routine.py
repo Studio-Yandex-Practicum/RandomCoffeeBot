@@ -1,16 +1,20 @@
 import re
 
-import structlog
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Plugin, listen_to
 
 from src.bot.schemas import Action, Actions, Attachment, Integration
+from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.depends import Container
 
+MONDAY_TIME_SENDING_MESSAGE = 10
+DAY_OF_WEEK_MON = "mon"
 FRIDAY_TIME_SENDING_MESSAGE = 11
 DAY_OF_WEEK_FRI = "fri"
-LOGGER = structlog.get_logger()
+SUNDAY_TIME_SENDING_MESSAGE = 11
+DAY_OF_WEEK_SUN = "sun"
 
 
 class WeekRoutine(Plugin):
@@ -30,7 +34,8 @@ class WeekRoutine(Plugin):
     def on_start(
         self,
         notify_service: NotifyService = Provide[Container.week_routine_service,],
-        scheduler=Provide[Container.scheduler],
+        matching_service: MatchingService = Provide[Container.matching_service],
+        scheduler: AsyncIOScheduler = Provide[Container.scheduler],
     ):
         scheduler.add_job(
             notify_service.notify_all_users,
@@ -39,7 +44,19 @@ class WeekRoutine(Plugin):
             hour=FRIDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self, attachments=self.every_friday_message, title="Еженедельный пятничный опрос"),
         )
-
+        scheduler.add_job(
+            matching_service.run_matching,
+            "cron",
+            day_of_week=DAY_OF_WEEK_SUN,
+            hour=SUNDAY_TIME_SENDING_MESSAGE,
+        )
+        scheduler.add_job(
+            notify_service.meeting_notifications,
+            "cron",
+            day_of_week=DAY_OF_WEEK_MON,
+            hour=MONDAY_TIME_SENDING_MESSAGE,
+            kwargs=dict(plugin=self),
+        )
         scheduler.start()
 
     @listen_to("/stop_jobs", re.IGNORECASE)
