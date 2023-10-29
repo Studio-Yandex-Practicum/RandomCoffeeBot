@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import select, update
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
@@ -26,3 +26,15 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
                 )
             ):
                 raise ObjectAlreadyExistsError(match)
+
+    async def closing_meetings(self) -> list[UsersMatch]:
+        """Закрывает встречи в конце недели."""
+        async with self._sessionmaker() as session:
+            updated = await session.scalars(
+                update(self._model)
+                .where(self._model.status == MatchStatusEnum.ONGOING)
+                .values(status=MatchStatusEnum.CLOSED)
+                .returning(self._model)
+            )
+            await session.commit()
+            return updated.all()

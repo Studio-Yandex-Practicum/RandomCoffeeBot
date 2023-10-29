@@ -18,3 +18,14 @@ class Matching(Plugin):
             self.driver.reply_to(message, "Создание пар завершено")
         except Exception as error:
             self.driver.reply_to(message, str(error))
+
+    @listen_to("/close", re.IGNORECASE)
+    @inject
+    async def test_closing_meetings(
+        self, message: Message, matching_service: MatchingService = Provide[Container.matching_service]
+    ) -> None:
+        try:
+            await matching_service.run_closing_meetings()
+            self.driver.reply_to(message, "Встречи закрыты")
+        except Exception as error:
+            self.driver.reply_to(message, str(error))
