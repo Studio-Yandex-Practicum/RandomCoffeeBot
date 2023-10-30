@@ -7,12 +7,12 @@ class Endpoints:
 
     def host_append(self, v: str):
         url = urljoin(self._host, v)
-        return url  # TODO: Просто их плюсовать плохой вариант, найти лучше.
+        return url
 
     @property
     def add_to_meeting(self):
-        return self.host_append("/hooks/yes")
+        return self.host_append("/hooks/yes_meeting")
 
     @property
     def not_meeting(self):
-        return self.host_append("/hooks/no")
+        return self.host_append("/hooks/no_meeting")

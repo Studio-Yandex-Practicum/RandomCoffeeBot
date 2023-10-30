@@ -3,9 +3,6 @@ from pathlib import Path
 from pydantic import DirectoryPath, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# from urllib.parse import urljoin
-
-
 ROOT_FOLDER = Path(__file__).parent.parent
 DSN_TEMPLATE = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
@@ -22,7 +19,6 @@ class Settings(BaseSettings):
     POSTGRES_USER: str = "postgres"
     POSTGRES_PASSWORD: str = "postgres"
     # Mattermost bot settings
-    MM_SERVICESETTINGS_SITEURL: str = "http://localhost:8065/"
     MATTERMOST_URL: str = "http://localhost"
     MATTERMOST_PORT: int = 8065
     MATTERMOST_API_PATH: str = "/api/v4"

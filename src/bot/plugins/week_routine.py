@@ -1,8 +1,7 @@
 import re
 
-import structlog
 from dependency_injector.wiring import Provide, inject
-from mmpy_bot import ActionEvent, Plugin, WebHookEvent, listen_to, listen_webhook
+from mmpy_bot import ActionEvent, Plugin, listen_to, listen_webhook
 
 from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.bot.services.notify_service import NotifyService
@@ -11,12 +10,11 @@ from src.endpoints import Endpoints
 
 FRIDAY_TIME_SENDING_MESSAGE = 11
 DAY_OF_WEEK_FRI = "fri"
-LOGGER = structlog.get_logger()
 
 
 class WeekRoutine(Plugin):
     @inject
-    def create_message(self, endpoints: Endpoints = Provide[Container.endpoints]):
+    def direct_friday_message(self, endpoints: Endpoints = Provide[Container.endpoints]):
         action_yes = Actions(
             id="yes",
             name="Да",
@@ -36,26 +34,31 @@ class WeekRoutine(Plugin):
         )
         return every_friday_message
 
+    @listen_to("/notify_all_users", re.IGNORECASE)
+    @inject
+    async def test_notify_all_users(
+        self, message, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ):
+        attachments = self.direct_friday_message()
+        await notify_service.notify_all_users(
+            plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"
+        ),
+
     @inject
     def on_start(
         self,
         notify_service: NotifyService = Provide[Container.week_routine_service,],
         scheduler=Provide[Container.scheduler,],
     ):
-        attachments = self.create_message()
+        attachments = self.direct_friday_message()
+
         scheduler.add_job(
             notify_service.notify_all_users,
-            "interval",
-            seconds=20,
+            "cron",
+            day_of_week=DAY_OF_WEEK_FRI,
+            hour=FRIDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
         )
-        # scheduler.add_job(
-        #     notify_service.notify_all_users,
-        #     "cron",
-        #     day_of_week=DAY_OF_WEEK_FRI,
-        #     hour=FRIDAY_TIME_SENDING_MESSAGE,
-        #     kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
-        # )
 
         scheduler.start()
 
@@ -71,30 +74,24 @@ class WeekRoutine(Plugin):
     ):
         await notify_service.change_user_status(user_id)
 
-    @listen_webhook("yes")
+    @listen_webhook("yes_meeting")
     async def add_to_meeting(
         self,
-        event: WebHookEvent,
+        event: ActionEvent,
     ):
-        if isinstance(event, ActionEvent):
-            await self._change_user_status(event.channel_id)
-            self.driver.respond_to_web(
-                event,
-                {
-                    "update": {"message": "До встречи!", "props": {}},
-                },
-            )
-        else:
-            self.driver.create_post(event.body["channel_id"], f"Webhook '{event.webhook_id}' triggered!")
+        await self._change_user_status(event.channel_id)
+        self.driver.respond_to_web(
+            event,
+            {
+                "update": {"message": "До встречи!", "props": {}},
+            },
+        )
 
-    @listen_webhook("no")
-    async def no(self, event: WebHookEvent):
-        if isinstance(event, ActionEvent):
-            self.driver.respond_to_web(
-                event,
-                {
-                    "update": {"message": "На следующей неделе отправлю новое предложение.", "props": {}},
-                },
-            )
-        else:
-            self.driver.create_post(event.body["channel_id"], f"Webhook '{event.webhook_id}' triggered!")
+    @listen_webhook("no_meeting")
+    async def no(self, event: ActionEvent):
+        self.driver.respond_to_web(
+            event,
+            {
+                "update": {"message": "На следующей неделе отправлю новое предложение.", "props": {}},
+            },
+        )
