@@ -15,8 +15,7 @@ class StatusEnum(StrEnum):
 
 class MatchStatusEnum(StrEnum):
     ONGOING = "ONGOING"
-    SUCCESSFUL = "SUCCESSFUL"
-    UNSUCCESSFUL = "UNSUCCESSFUL"
+    CLOSED = "CLOSED"
 
 
 class Base(DeclarativeBase):
@@ -56,4 +55,4 @@ class UsersMatch(Base):
 
     matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    status: Mapped[MatchStatusEnum] = mapped_column(default=MatchStatusEnum.UNSUCCESSFUL, nullable=False)
+    status: Mapped[MatchStatusEnum] = mapped_column(default=MatchStatusEnum.ONGOING, nullable=False)
