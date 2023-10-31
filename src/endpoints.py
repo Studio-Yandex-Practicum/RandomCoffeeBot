@@ -11,8 +11,8 @@ class Endpoints:
 
     @property
     def add_to_meeting(self):
-        return self.host_append("/hooks/yes_meeting")
+        return self.host_append("/hooks/set_waiting_meeting_status")
 
     @property
     def not_meeting(self):
-        return self.host_append("/hooks/no_meeting")
+        return self.host_append("/hooks/not_meeting")

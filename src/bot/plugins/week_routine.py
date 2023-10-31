@@ -72,9 +72,9 @@ class WeekRoutine(Plugin):
     async def _change_user_status(
         self, user_id: str, notify_service: NotifyService = Provide[Container.week_routine_service,]
     ):
-        await notify_service.change_user_status(user_id)
+        await notify_service.set_waiting_meeting_status(user_id)
 
-    @listen_webhook("yes_meeting")
+    @listen_webhook("set_waiting_meeting_status")
     async def add_to_meeting(
         self,
         event: ActionEvent,
@@ -87,7 +87,7 @@ class WeekRoutine(Plugin):
             },
         )
 
-    @listen_webhook("no_meeting")
+    @listen_webhook("not_meeting")
     async def no(self, event: ActionEvent):
         self.driver.respond_to_web(
             event,
