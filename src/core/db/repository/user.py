@@ -9,6 +9,7 @@ class UserRepository(AbstractRepository[User]):
     _model = User
 
     async def get_all_chat_id(self) -> list[str] | None:
+        """Получает все user id для маттермост"""
         async with self._sessionmaker() as session:
             instance = await session.execute(select(self._model.user_id))
             return instance.scalars().all()
@@ -23,7 +24,7 @@ class UserRepository(AbstractRepository[User]):
         db_instance = await self.get_by_username(instance.username)
         if db_instance is None:
             return await self.create(instance)
-        return await self.update(instance.id, db_instance)
+        return await self.update(db_instance.id, instance)
 
     async def get_by_status(self, status: str) -> list[User] | None:
         """Получает пользователей по статусу участия во встречах."""
@@ -61,3 +62,10 @@ class UserRepository(AbstractRepository[User]):
         current_user = await self.get(instance_id=user_id)
         current_user.status = StatusEnum.IN_MEETING
         await self.update(user_id, current_user)
+
+    async def set_waiting_meeting_status(self, user_id: str) -> None:
+        """Устанавливает статус waiting_meeting для встречи после еженедельного опроса."""
+        async with self._sessionmaker() as session:
+            current_user = await session.scalar(select(self._model).where(self._model.user_id == user_id))
+        current_user.status = StatusEnum.WAITING_MEETING
+        await self.update(current_user.id, current_user)
