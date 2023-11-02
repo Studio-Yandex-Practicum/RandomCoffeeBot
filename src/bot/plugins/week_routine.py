@@ -11,11 +11,11 @@ from src.depends import Container
 from src.endpoints import Endpoints
 
 MONDAY_TIME_SENDING_MESSAGE = 10
-DAY_OF_WEEK_MON = "mon"
+DAY_OF_WEEK_MONDAY = "mon"
 FRIDAY_TIME_SENDING_MESSAGE = 11
-DAY_OF_WEEK_FRI = "fri"
+DAY_OF_WEEK_FRIDAY = "fri"
 SUNDAY_TIME_SENDING_MESSAGE = 11
-DAY_OF_WEEK_SUN = "sun"
+DAY_OF_WEEK_SUNDAY = "sun"
 
 
 class WeekRoutine(Plugin):
@@ -62,20 +62,20 @@ class WeekRoutine(Plugin):
         scheduler.add_job(
             notify_service.notify_all_users,
             "cron",
-            day_of_week=DAY_OF_WEEK_FRI,
+            day_of_week=DAY_OF_WEEK_FRIDAY,
             hour=FRIDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
             matching_service.run_matching,
             "cron",
-            day_of_week=DAY_OF_WEEK_SUN,
+            day_of_week=DAY_OF_WEEK_SUNDAY,
             hour=SUNDAY_TIME_SENDING_MESSAGE,
         )
         scheduler.add_job(
             notify_service.meeting_notifications,
             "cron",
-            day_of_week=DAY_OF_WEEK_MON,
+            day_of_week=DAY_OF_WEEK_MONDAY,
             hour=MONDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self),
         )
