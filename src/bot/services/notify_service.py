@@ -34,9 +34,7 @@ class NotifyService:
     async def meeting_notifications(self, plugin: Plugin) -> None:
         """Уведомляет участников встреч о паре на этой неделе."""
         for match in await self._match_repository.get_by_status(status=MatchStatusEnum.ONGOING):
-            pair: list[User] = []
-            for user in (match.matched_user_one, match.matched_user_two):
-                pair.append(await self._user_repository.get(instance_id=user))
+            pair: list[User] = [match.object_user_one, match.object_user_two]
             for user_one, user_two in zip(pair, pair[::-1]):
                 try:
                     plugin.driver.direct_message(

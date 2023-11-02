@@ -1,4 +1,5 @@
 from sqlalchemy import select, update
+from sqlalchemy.orm import selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
@@ -42,4 +43,8 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
     async def get_by_status(self, status: str) -> list[UsersMatch]:
         """Получает встречи по статусу."""
         async with self._sessionmaker() as session:
-            return await session.scalars(select(self._model).where(self._model.status == status))
+            return await session.scalars(
+                select(self._model)
+                .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
+                .where(self._model.status == status)
+            )
