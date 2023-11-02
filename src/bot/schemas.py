@@ -7,13 +7,13 @@ class Field(BaseModel):
     short: bool
 
 
-class Action(BaseModel):
+class Context(BaseModel):
     action: str = ""
 
 
 class Integration(BaseModel):
     url: str
-    context: Action
+    context: Context
 
 
 class Actions(BaseModel):

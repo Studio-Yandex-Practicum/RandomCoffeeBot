@@ -11,6 +11,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         extra="ignore", case_sensitive=True, env_file=ROOT_FOLDER / ".env" if (ROOT_FOLDER / ".env").exists() else None
     )
+    HOST: str = "http://host.docker.internal:8579/"
     # database connection configuration
     DB_HOST: str = "localhost"
     DB_PORT: int = 5432
@@ -21,6 +22,9 @@ class Settings(BaseSettings):
     MATTERMOST_URL: str = "http://localhost"
     MATTERMOST_PORT: int = 8065
     MATTERMOST_API_PATH: str = "/api/v4"
+    WEBHOOK_HOST_ENABLED: bool = True
+    WEBHOOK_HOST_URL: str = "http://localhost"
+    WEBHOOK_HOST_PORT: int = 8579
     BOT_TOKEN: str
     BOT_TEAM: str = ""
     SSL_VERIFY: bool = False

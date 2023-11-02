@@ -16,6 +16,9 @@ def init_bot(config: Settings_bot) -> Bot:
             BOT_TOKEN=config.BOT_TOKEN,
             BOT_TEAM=config.BOT_TEAM,
             SSL_VERIFY=config.SSL_VERIFY,
+            WEBHOOK_HOST_ENABLED=config.WEBHOOK_HOST_ENABLED,
+            WEBHOOK_HOST_URL=config.WEBHOOK_HOST_URL,
+            WEBHOOK_HOST_PORT=config.WEBHOOK_HOST_PORT,
         ),
         plugins=[Registration(), BotAdmin(), WeekRoutine(), Matching()],
     )

@@ -31,6 +31,9 @@ class NotifyService:
             except NotEnoughPermissions:
                 logger.error(f"Пользователя с таким user_id {user_id} нет в matter_most")
 
+    async def set_waiting_meeting_status(self, user_id: str):
+        await self._user_repository.set_waiting_meeting_status(user_id)
+
     async def meeting_notifications(self, plugin: Plugin) -> None:
         """Уведомляет участников встреч о паре на этой неделе."""
         for match in await self._match_repository.get_by_status(status=MatchStatusEnum.ONGOING):

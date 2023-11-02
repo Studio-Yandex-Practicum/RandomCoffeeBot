@@ -9,12 +9,14 @@ from src.bot.services.registration import RegistrationService
 from src.core.db.repository.admin import AdminRepository
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
+from src.endpoints import Endpoints
 from src.settings import Settings
 
 
 class Container(containers.DeclarativeContainer):
     # Settings
     settings = providers.Singleton(Settings)
+    endpoints = providers.Singleton(Endpoints, host=settings.provided.HOST)
     # DB Connection
     engine = providers.Singleton(create_async_engine, settings.provided.database_url, future=True, echo=True)
     sessionmaker = providers.Singleton(async_sessionmaker, engine, expire_on_commit=False)
