@@ -14,6 +14,8 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  DEPLOY_PATH: /RandomCoffeeBot
+  WORK_DIR: /RandomCoffeeBot/src
 
 defaults:
   run:
@@ -26,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: stage_deploy
-    label: stage
+      label: stage
     permissions:
       contents: read
       packages: write
@@ -113,26 +115,25 @@ jobs:
             LOGGER_NAME=${{ env.LOGGER_NAME }}
             EOM
 
-    start_application:
-      name: Start application
-      if: github.event.pull_request.merged == true
-      runs-on: ubuntu-latest
-      environment:
-        name: stage_deploy
-      needs: deploy
-      steps:
-        - name: Start application
-          uses: appleboy/ssh-action@master
-          with:
-            host: ${{ secrets.HOST }}
-            username: ${{ secrets.SSH_USERNAME }}
-            password: ${{ secrets.SSH_PASSWORD }}
-            port: ${{ secrets.SSH_PORT }}
-            script: |
-              cd ${{ env.DEPLOY_PATH }}/infra
-              docker-compose --file docker-compose.yaml stop
-              docker-compose --file docker-compose.yaml pull bot -q
-              docker-compose --file docker-compose.yaml up -d --wait
-              docker-system prune -f || true
-
-              docker-compose exec -Tw ${{ env.WORK_DIR }} bot bash -c "alembic upgrade head"
+  start_application:
+    name: Start application
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment:
+      name: stage_deploy
+    needs: deploy
+    steps:
+      - name: Start application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}/infra
+            docker-compose --file docker-compose.yaml stop
+            docker-compose --file docker-compose.yaml pull bot -q
+            docker-compose --file docker-compose.yaml up -d --wait
+            docker-system prune -f || true
+            docker-compose exec -Tw ${{ env.WORK_DIR }} bot bash -c "alembic upgrade head"
