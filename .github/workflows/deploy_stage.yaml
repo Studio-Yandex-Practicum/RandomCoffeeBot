@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  DEPLOY_PATH: ~/app
+  DEPLOY_PATH: /home/devMattermost/app
 
 defaults:
   run:
