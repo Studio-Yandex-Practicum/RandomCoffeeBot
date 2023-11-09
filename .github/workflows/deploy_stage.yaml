@@ -74,7 +74,8 @@ jobs:
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.HOST }}
-          ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           source: "infra/docker-compose.prod.yml"
           target: ${{ env.DEPLOY_PATH }}
 
