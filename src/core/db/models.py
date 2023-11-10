@@ -26,7 +26,6 @@ class Base(DeclarativeBase):
     updated_at: Mapped[date] = mapped_column(
         nullable=False, onupdate=SERVER_DEFAULT_TIME, server_default=SERVER_DEFAULT_TIME
     )
-    __name__: Mapped[str]
 
 
 class Admin(Base):

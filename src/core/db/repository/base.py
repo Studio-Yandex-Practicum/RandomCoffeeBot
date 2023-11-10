@@ -1,10 +1,9 @@
 import abc
 from typing import Generic, TypeVar
 
-from sqlalchemy import select, update
+from sqlalchemy import ScalarResult, select, update
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from src.core.db.models import Base
 from src.core.exceptions import exceptions
@@ -17,7 +16,7 @@ class AbstractRepository(abc.ABC, Generic[Model]):
 
     _model: type[Model]
 
-    def __init__(self, sessionmaker: sessionmaker[AsyncSession]) -> None:
+    def __init__(self, sessionmaker: async_sessionmaker[AsyncSession]) -> None:
         self._sessionmaker = sessionmaker
 
     async def get_or_none(self, instance_id: int) -> Model | None:
@@ -30,7 +29,7 @@ class AbstractRepository(abc.ABC, Generic[Model]):
         """Получает объект модели по ID. В случае отсутствия объекта бросает ошибку."""
         db_obj = await self.get_or_none(instance_id)
         if db_obj is None:
-            raise exceptions.ObjectNotFoundError(self._model.Base, instance_id)
+            raise exceptions.ObjectNotFoundError(self._model, instance_id)
         return db_obj
 
     async def create(self, instance: Model) -> Model:
@@ -52,14 +51,16 @@ class AbstractRepository(abc.ABC, Generic[Model]):
             await session.commit()
         return instance
 
-    async def update_all(self, instances: list[dict[Model, Model]]) -> list[dict[Model, Model]]:
+    async def update_all(
+        self, instances: list[dict[str, Model]] | dict[str, Model] | None
+    ) -> list[dict[str, Model]] | dict[str, Model] | None:
         """Обновляет несколько измененных объектов модели в базе."""
         async with self._sessionmaker() as session:
             await session.execute(update(self._model), instances)
             await session.commit()
         return instances
 
-    async def get_all(self) -> list[Model]:
+    async def get_all(self) -> ScalarResult[Model]:
         """Возвращает все объекты модели из базы данных."""
         async with self._sessionmaker() as session:
             objects = await session.scalars(select(self._model))

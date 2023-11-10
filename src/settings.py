@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from pydantic import DirectoryPath, PostgresDsn
+from pydantic import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
@@ -39,12 +39,13 @@ class Settings(BaseSettings):
     ADMIN_USERNAME: str
 
     @property
-    def database_url(self) -> PostgresDsn:
+    def database_url(self) -> str:
         """assembles a valid DSN from provided settings"""
-        return DSN_TEMPLATE.format(
+        dsn_string = DSN_TEMPLATE.format(
             user=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.DB_HOST,
             port=self.DB_PORT,
             db_name=self.POSTGRES_DB,
         )
+        return dsn_string
