@@ -14,12 +14,14 @@ on:
 
 env:
   REGISTRY: ghcr.io
+  DEPLOY_PATH: /home/devMattermost/app
 
 defaults:
   run:
     working-directory: .
 
 jobs:
+
   build-and-push-image-to-github-packages:
     name: Push backend Docker image to GitHub Packages
     runs-on: ubuntu-latest
@@ -31,25 +33,101 @@ jobs:
     steps:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           ref: develop
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Sanitize repo slug
         uses: actions/github-script@v6
         id: repo_slug
         with:
           result-encoding: string
           script: return 'ghcr.io/${{ github.repository }}'.toLowerCase()
+
       - name: Push Stage to GitHub Container Registry
         uses: docker/build-push-action@v4
         with:
           context: "{{defaultContext}}"
           push: true
           tags: ${{ steps.repo_slug.outputs.result }}:stage
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build-and-push-image-to-github-packages
+    environment:
+      name: stage_deploy
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Copy docker-compose files
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          source: "infra/docker-compose.prod.yml"
+          target: ${{ env.DEPLOY_PATH }}
+
+      - name: Create .env file
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}/infra
+            mv docker-compose.prod.yml docker-compose.yaml
+            rm -f .env
+            cat > .env <<- EOM
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            BOT_TOKEN=${{ secrets.BOT_TOKEN }}
+            BOT_TEAM=${{ secrets.BOT_TEAM }}
+            WEBHOOK_HOST_URL=${{ secrets.WEBHOOK_HOST_URL }}
+            WEBHOOK_HOST_PORT=${{ secrets.WEBHOOK_HOST_PORT }}
+            ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }}
+            MATTERMOST_URL=${{ secrets.MATTERMOST_URL }}
+            MATTERMOST_PORT=${{ secrets.MATTERMOST_PORT }}
+            MATTERMOST_API_PATH=${{ secrets.MATTERMOST_API_PATH }}
+            LOG_MIN_ERROR_LEVEL=${{ secrets.LOG_MIN_ERROR_LEVEL }}
+            LOGGER_NAME=${{ secrets.LOGGER_NAME }}
+            LOG_ROOT=${{ secrets.LOG_ROOT }}
+            LOG_MIN_ERROR_LEVEL=${{ secrets.LOG_MIN_ERROR_LEVEL }}
+            LOGGER_NAME=${{ env.LOGGER_NAME }}
+            EOM
+
+  start_application:
+    name: Start application
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    environment:
+      name: stage_deploy
+    needs: deploy
+    steps:
+      - name: Start application
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ env.DEPLOY_PATH }}/infra
+            docker-compose --file docker-compose.yaml stop
+            docker-compose --file docker-compose.yaml pull bot -q
+            docker-compose --file docker-compose.yaml up -d --wait
+            docker-system prune -f || true
+            docker-compose exec -Tw ${{ env.WORK_DIR }} bot bash -c "alembic upgrade head"

@@ -12,10 +12,9 @@ services:
 
   bot:
     container_name: "bot_mattermost"
-    build:
-      context: ../
-      dockerfile: Dockerfile
-    network_mode: host
+    image: ghcr.io/studio-yandex-practicum/randomcoffeebot:stage
+    ports:
+      - "8579:8579"
     restart: always
     depends_on:
       - db
