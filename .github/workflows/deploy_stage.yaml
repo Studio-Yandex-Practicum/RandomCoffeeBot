@@ -129,4 +129,4 @@ jobs:
             docker compose --file docker-compose.yaml pull bot -q
             docker compose --file docker-compose.yaml up -d --wait
             docker system prune -f || true
-            docker compose exec -Tw ${{ env.WORK_DIR }} bot alembic upgrade head
+            docker compose exec -T bot alembic upgrade head
