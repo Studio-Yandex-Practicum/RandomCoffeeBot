@@ -112,7 +112,6 @@ jobs:
 
   start_application:
     name: Start application
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment:
       name: stage_deploy
