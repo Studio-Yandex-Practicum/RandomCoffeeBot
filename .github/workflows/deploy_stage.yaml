@@ -125,8 +125,8 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd ${{ env.DEPLOY_PATH }}/infra
-            docker compose --file docker-compose.yaml stop
-            docker compose --file docker-compose.yaml pull bot -q
-            docker compose --file docker-compose.yaml up -d --wait
-            docker system prune -f || true
-            docker compose exec -T bot alembic upgrade head
+            sudo docker compose --file docker-compose.yaml stop
+            sudo docker compose --file docker-compose.yaml pull bot -q
+            sudo docker compose --file docker-compose.yaml up -d --wait
+            sudo docker system prune -f || true
+            sudo docker compose exec -T bot alembic upgrade head
