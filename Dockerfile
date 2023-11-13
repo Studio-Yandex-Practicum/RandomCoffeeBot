@@ -3,6 +3,7 @@ FROM python:3.11
 RUN mkdir /app
 
 WORKDIR /app
+RUN mkdir logs
 
 COPY requirements.txt /app
 RUN pip install --upgrade pip
