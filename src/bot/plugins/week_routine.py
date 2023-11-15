@@ -48,7 +48,14 @@ class WeekRoutine(Plugin):
         attachments = self.direct_friday_message()
         await notify_service.notify_all_users(
             plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"
-        ),
+        )
+
+    @listen_to("/monday_message", re.IGNORECASE)
+    @inject
+    async def test_monday_message(
+        self, message, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ):
+        await notify_service.meeting_notifications(plugin=self)
 
     @inject
     def on_start(
@@ -98,7 +105,7 @@ class WeekRoutine(Plugin):
         self,
         event: ActionEvent,
     ):
-        await self._change_user_status(event.channel_id)
+        await self._change_user_status(event.user_id)
         self.driver.respond_to_web(
             event,
             {

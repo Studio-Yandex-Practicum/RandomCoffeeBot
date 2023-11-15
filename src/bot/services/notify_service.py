@@ -1,5 +1,5 @@
 import structlog
-from mattermostautodriver.exceptions import InvalidOrMissingParameters, NotEnoughPermissions
+from mattermostautodriver.exceptions import InvalidOrMissingParameters
 from mmpy_bot import Plugin
 
 from src.bot.schemas import Attachment
@@ -23,12 +23,10 @@ class NotifyService:
             return logger.error("Пользователи отсутствуют.")
         for user_id in users_id:
             try:
-                logger.info(f"Началась отправка сообщения {user_id}")
-                plugin.driver.create_post(
-                    channel_id=user_id, message=title, props={"attachments": [attachments.model_dump()]}
+                plugin.driver.direct_message(
+                    receiver_id=user_id, message=title, props={"attachments": [attachments.model_dump()]}
                 )
-                logger.info("Сообщение отправлено.")
-            except NotEnoughPermissions:
+            except InvalidOrMissingParameters:
                 logger.error(f"Пользователя с таким user_id {user_id} нет в matter_most")
 
     async def set_waiting_meeting_status(self, user_id: str):
