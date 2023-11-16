@@ -13,7 +13,8 @@ services:
   bot:
     container_name: "bot_mattermost"
     image: ghcr.io/studio-yandex-practicum/randomcoffeebot:stage
-    env_file: .env
+    env_file:
+      - ./.env
     ports:
       - "8579:8579"
     restart: always
