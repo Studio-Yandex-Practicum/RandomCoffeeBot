@@ -1,14 +1,12 @@
 import argparse
 import asyncio
 import random
-from argparse import Namespace
 
 from dependency_injector import wiring
 from faker import Faker
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from sqlalchemy.schema import Table
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.db.models import Base, User, UsersMatch
+from src.core.db.models import User, UsersMatch
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
 from src.depends import Container
@@ -16,7 +14,7 @@ from src.depends import Container
 fake = Faker()
 
 
-def parse_arguments() -> Namespace:
+def parse_arguments():
     parser = argparse.ArgumentParser(description="Загрузка тестовых данных пользователей и их мэтчей в БД")
     parser.add_argument(
         "-u",
@@ -50,8 +48,8 @@ async def filling_users_in_db(user_repo: UserRepository, num_users: int) -> None
 
 async def filling_users_match_in_db(session: AsyncSession, match_repo: UsersMatchRepository, num_pairs: int) -> None:
     """Заполняем базу мэтчами"""
-    users_query = await session.execute(User.__table__.select())
-    users = users_query.all()
+    users = await session.execute(User.__table__.select())
+    users = users.all()
 
     if num_pairs != 0 and len(users) <= 1:
         print("Недостаточно пользователей для создания пар. Требуется как минимум два пользователя.")
@@ -79,17 +77,17 @@ async def filling_users_match_in_db(session: AsyncSession, match_repo: UsersMatc
 
 async def delete_all_data(session: AsyncSession) -> None:
     """Удаление всех данных User, UsersMatch из таблицы"""
-    await session.execute(Table(UsersMatch.__tablename__, Base.metadata).delete())
-    await session.execute(Table(User.__tablename__, Base.metadata).delete())
+    await session.execute(UsersMatch.__table__.delete())
+    await session.execute(User.__table__.delete())
     await session.commit()
 
 
 @wiring.inject
 async def main(
-    sessionmaker: async_sessionmaker[AsyncSession] = wiring.Provide[Container.sessionmaker],
+    sessionmaker: AsyncSession = wiring.Provide[Container.sessionmaker],
     user_repo: UserRepository = wiring.Provide[Container.user_repository],
     match_repo: UsersMatchRepository = wiring.Provide[Container.match_repository],
-) -> None:
+):
     args = parse_arguments()
 
     try:

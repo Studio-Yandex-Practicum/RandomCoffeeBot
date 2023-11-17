@@ -1,5 +1,3 @@
-from typing import Sequence
-
 from sqlalchemy import select, update
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
@@ -17,7 +15,7 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             UsersMatch(matched_user_one=user_one.id, matched_user_two=user_two.id, status=MatchStatusEnum.ONGOING)
         )
 
-    async def check_unique_matching(self, user_one: User, user_two: User) -> None:
+    async def check_unique_matching(self, user_one: User, user_two: User):
         """Проверяет уникальность пар пользователей."""
         async with self._sessionmaker() as session:
             if match := await session.scalar(
@@ -29,7 +27,7 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             ):
                 raise ObjectAlreadyExistsError(match)
 
-    async def closing_meetings(self) -> Sequence[UsersMatch]:
+    async def closing_meetings(self) -> list[UsersMatch]:
         """Закрывает встречи в конце недели."""
         async with self._sessionmaker() as session:
             updated = await session.scalars(

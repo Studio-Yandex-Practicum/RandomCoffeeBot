@@ -1,5 +1,3 @@
-from typing import Sequence
-
 import structlog
 
 from src.core.db.models import StatusEnum, UsersMatch
@@ -16,13 +14,12 @@ class MatchingService:
         self._user_repository = user_repository
         self._match_repository = match_repository
 
-    async def run_matching(self) -> list[UsersMatch] | None:
+    async def run_matching(self) -> list[UsersMatch]:
         """Запускает создание метчей."""
         matches: list[UsersMatch] = []
         while user_one := await self._user_repository.get_free_user():
             if not (user_two := await self._user_repository.get_suitable_pair(user_one)):
-                log.info(f"Невозможно создать пару для пользователя с id {user_one.id}.")
-                return None
+                return log.info(f"Невозможно создать пару для пользователя с id {user_one.id}.")
             matches.append(match := await self._match_repository.make_match_for_user(user_one, user_two))
             for user in (user_one, user_two):
                 user.status = StatusEnum.IN_MEETING
@@ -30,6 +27,6 @@ class MatchingService:
                 await self._user_repository.update(user.id, user)
         return matches
 
-    async def run_closing_meetings(self) -> Sequence[UsersMatch]:
+    async def run_closing_meetings(self):
         """Запускает закрытие встреч."""
         return await self._match_repository.closing_meetings()
