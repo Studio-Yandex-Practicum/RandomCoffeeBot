@@ -32,4 +32,9 @@ class MatchingService:
 
     async def run_closing_meetings(self) -> Sequence[UsersMatch]:
         """Запускает закрытие встреч."""
+
+        users = await self._user_repository.get_by_status(StatusEnum.IN_MEETING)
+        for user in users:
+            user.status = StatusEnum.NOT_INVOLVED
+            await self._user_repository.update(user.id, user)
         return await self._match_repository.closing_meetings()

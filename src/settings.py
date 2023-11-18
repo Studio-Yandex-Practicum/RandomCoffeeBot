@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import ClassVar
 
 from pydantic import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -32,7 +33,7 @@ class Settings(BaseSettings):
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"
     LOGGER_NAME: str = "root"
-    LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
+    LOG_ROOT: ClassVar = ROOT_FOLDER / "logs"
     LOG_FILE_SIZE: int = 10 * 2**20
     LOG_FILES_TO_KEEP: int = 5
     # admin settings

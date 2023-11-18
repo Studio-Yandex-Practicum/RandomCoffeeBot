@@ -31,7 +31,8 @@ class UserRepository(AbstractRepository[User]):
     async def get_by_status(self, status: str) -> ScalarResult[User] | None:
         """Получает пользователей по статусу участия во встречах."""
         async with self._sessionmaker() as session:
-            return await session.scalars(select(self._model).where(self._model.status == status))
+            users = await session.scalars(select(self._model).where(self._model.status == status))
+        return users.all()
 
     async def get_free_user(self) -> User | None:
         """Получает пользователя ожидающего встречи."""

@@ -32,6 +32,8 @@ class Container(containers.DeclarativeContainer):
     matching_service = providers.Factory(
         MatchingService, user_repository=user_repository, match_repository=match_repository
     )
-    week_routine_service = providers.Factory(NotifyService, user_repository=user_repository)
+    week_routine_service = providers.Factory(
+        NotifyService, user_repository=user_repository, match_repository=match_repository
+    )
     # Scheduler
     scheduler: AsyncIOScheduler = providers.Singleton(AsyncIOScheduler)

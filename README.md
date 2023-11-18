@@ -75,7 +75,7 @@ Random Coffee bot for the Mattermost
 > **Note**
 > Достаточно задать:
 > Username
-> Role
+> Role (System Admin)
 5. Скопируйте Token
 > **Warning**
 > После нажатия Done, вы больше не сможете посмотреть Access Token
