@@ -1,5 +1,5 @@
 import structlog
-from mattermostautodriver.exceptions import NotEnoughPermissions, InvalidOrMissingParameters
+from mattermostautodriver.exceptions import InvalidOrMissingParameters, NotEnoughPermissions
 from mmpy_bot import Plugin
 
 from src.bot.schemas import Attachment
