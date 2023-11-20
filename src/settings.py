@@ -1,7 +1,6 @@
 from pathlib import Path
 from typing import ClassVar
 
-from pydantic import DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
