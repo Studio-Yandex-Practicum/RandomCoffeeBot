@@ -10,9 +10,7 @@ from src.settings import Settings
 
 
 def init_logging(settings: Settings) -> None:
-    settings.LOG_ROOT.mkdir(exist_ok=True)
-    if not os.path.exists(filepath := settings.LOG_ROOT / settings.LOGGER_NAME):
-        filepath.touch()
+    os.makedirs(settings.LOG_ROOT, exist_ok=True)
 
     processors: list[Processor] = [
         structlog.stdlib.add_log_level,

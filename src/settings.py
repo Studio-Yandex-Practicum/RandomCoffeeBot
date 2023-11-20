@@ -4,7 +4,7 @@ from typing import ClassVar
 from pydantic import PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-ROOT_FOLDER = Path(__file__).parent.parent
+ROOT_FOLDER = Path(__file__).resolve().parent.parent
 DSN_TEMPLATE = "postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}"
 
 
@@ -33,7 +33,7 @@ class Settings(BaseSettings):
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"
     LOGGER_NAME: str = "root"
-    LOG_ROOT: ClassVar = ROOT_FOLDER / "logs"
+    LOG_ROOT: ClassVar[Path] = ROOT_FOLDER / "logs"
     LOG_FILE_SIZE: int = 10 * 2**20
     LOG_FILES_TO_KEEP: int = 5
     # admin settings
