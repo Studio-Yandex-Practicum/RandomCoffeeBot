@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"
     LOGGER_NAME: str = "root"
-    LOG_ROOT: str | Path = ROOT_FOLDER / "logs"
+    LOG_ROOT: ClassVar[Path] = ROOT_FOLDER / "logs"
     LOG_FILE_SIZE: int = 10 * 2**20
     LOG_FILES_TO_KEEP: int = 5
     # admin settings
