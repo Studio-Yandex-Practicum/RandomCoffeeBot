@@ -1,3 +1,4 @@
+# mypy: disable-error-code="misc"
 import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -54,8 +55,8 @@ class WeekRoutine(Plugin):
     @listen_to("/monday_message", re.IGNORECASE)
     @inject
     async def test_monday_message(
-        self, message, notify_service: NotifyService = Provide[Container.week_routine_service,]
-    ):
+        self, message: Message, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ) -> None:
         await notify_service.meeting_notifications(plugin=self)
 
     @inject
