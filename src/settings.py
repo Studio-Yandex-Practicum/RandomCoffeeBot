@@ -1,6 +1,6 @@
 from pathlib import Path
+from typing import ClassVar
 
-from pydantic import DirectoryPath, PostgresDsn
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ROOT_FOLDER = Path(__file__).parent.parent
@@ -32,19 +32,20 @@ class Settings(BaseSettings):
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"
     LOGGER_NAME: str = "root"
-    LOG_ROOT: DirectoryPath = ROOT_FOLDER / "logs"
+    LOG_ROOT: ClassVar = ROOT_FOLDER / "logs"
     LOG_FILE_SIZE: int = 10 * 2**20
     LOG_FILES_TO_KEEP: int = 5
     # admin settings
     ADMIN_USERNAME: str
 
     @property
-    def database_url(self) -> PostgresDsn:
+    def database_url(self) -> str:
         """assembles a valid DSN from provided settings"""
-        return DSN_TEMPLATE.format(
+        dsn_string = DSN_TEMPLATE.format(
             user=self.POSTGRES_USER,
             password=self.POSTGRES_PASSWORD,
             host=self.DB_HOST,
             port=self.DB_PORT,
             db_name=self.POSTGRES_DB,
         )
+        return dsn_string

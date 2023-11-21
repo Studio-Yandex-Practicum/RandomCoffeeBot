@@ -1,3 +1,4 @@
+# mypy: disable-error-code="misc"
 import re
 
 from dependency_injector.wiring import Provide, inject

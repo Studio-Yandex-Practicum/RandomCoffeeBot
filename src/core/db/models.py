@@ -26,7 +26,6 @@ class Base(DeclarativeBase):
     updated_at: Mapped[date] = mapped_column(
         nullable=False, onupdate=SERVER_DEFAULT_TIME, server_default=SERVER_DEFAULT_TIME
     )
-    __name__: Mapped[str]
 
 
 class Admin(Base):
@@ -46,7 +45,7 @@ class User(Base):
     status: Mapped[StatusEnum] = mapped_column(default=StatusEnum.NOT_INVOLVED, nullable=False)
 
     matches: Mapped[list["UsersMatch"]] = relationship(
-        primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)",
+        primaryjoin="or_(User.id==UsersMatch.matched_user_one, User.id==UsersMatch.matched_user_two)"
     )
 
 
@@ -56,3 +55,6 @@ class UsersMatch(Base):
     matched_user_one: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     matched_user_two: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     status: Mapped[MatchStatusEnum] = mapped_column(default=MatchStatusEnum.ONGOING, nullable=False)
+
+    object_user_one = relationship("User", foreign_keys=[matched_user_one], backref="matches_as_user_one")
+    object_user_two = relationship("User", foreign_keys=[matched_user_two], backref="matches_as_user_two")

@@ -1,4 +1,7 @@
+from typing import Sequence
+
 from sqlalchemy import select, update
+from sqlalchemy.orm import selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
@@ -15,7 +18,7 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             UsersMatch(matched_user_one=user_one.id, matched_user_two=user_two.id, status=MatchStatusEnum.ONGOING)
         )
 
-    async def check_unique_matching(self, user_one: User, user_two: User):
+    async def check_unique_matching(self, user_one: User, user_two: User) -> None:
         """Проверяет уникальность пар пользователей."""
         async with self._sessionmaker() as session:
             if match := await session.scalar(
@@ -27,7 +30,7 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             ):
                 raise ObjectAlreadyExistsError(match)
 
-    async def closing_meetings(self) -> list[UsersMatch]:
+    async def closing_meetings(self) -> Sequence[UsersMatch]:
         """Закрывает встречи в конце недели."""
         async with self._sessionmaker() as session:
             updated = await session.scalars(
@@ -38,3 +41,13 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             )
             await session.commit()
             return updated.all()
+
+    async def get_by_status(self, status: str | MatchStatusEnum) -> Sequence[UsersMatch]:
+        """Получает встречи по статусу."""
+        async with self._sessionmaker() as session:
+            meetings = await session.scalars(
+                select(self._model)
+                .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
+                .where(self._model.status == status)
+            )
+            return meetings.all()
