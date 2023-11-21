@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from sqlalchemy import ScalarResult, select
+from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
 from src.core.db.models import MatchStatusEnum, StatusEnum, User, UsersMatch
@@ -28,10 +28,11 @@ class UserRepository(AbstractRepository[User]):
             return await self.create(instance)
         return await self.update(db_instance.id, instance)
 
-    async def get_by_status(self, status: str) -> ScalarResult[User] | None:
+    async def get_by_status(self, status: str) -> Sequence[User]:
         """Получает пользователей по статусу участия во встречах."""
         async with self._sessionmaker() as session:
-            return await session.scalars(select(self._model).where(self._model.status == status))
+            users = await session.scalars(select(self._model).where(self._model.status == status))
+        return users.all()
 
     async def get_free_user(self) -> User | None:
         """Получает пользователя ожидающего встречи."""

@@ -1,6 +1,7 @@
 from typing import Sequence
 
 from sqlalchemy import select, update
+from sqlalchemy.orm import selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
@@ -40,3 +41,13 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
             )
             await session.commit()
             return updated.all()
+
+    async def get_by_status(self, status: str | MatchStatusEnum) -> Sequence[UsersMatch]:
+        """Получает встречи по статусу."""
+        async with self._sessionmaker() as session:
+            meetings = await session.scalars(
+                select(self._model)
+                .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
+                .where(self._model.status == status)
+            )
+            return meetings.all()

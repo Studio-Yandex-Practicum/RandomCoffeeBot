@@ -1,3 +1,4 @@
+# mypy: disable-error-code="misc"
 import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -6,12 +7,17 @@ from mmpy_bot import ActionEvent, Plugin, listen_to, listen_webhook
 from mmpy_bot.wrappers import Message
 
 from src.bot.schemas import Actions, Attachment, Context, Integration
+from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.depends import Container
 from src.endpoints import Endpoints
 
+MONDAY_TIME_SENDING_MESSAGE = 10
+DAY_OF_WEEK_MONDAY = "mon"
 FRIDAY_TIME_SENDING_MESSAGE = 11
-DAY_OF_WEEK_FRI = "fri"
+DAY_OF_WEEK_FRIDAY = "fri"
+SUNDAY_TIME_SENDING_MESSAGE = 11
+DAY_OF_WEEK_SUNDAY = "sun"
 
 
 class WeekRoutine(Plugin):
@@ -44,24 +50,44 @@ class WeekRoutine(Plugin):
         attachments = self.direct_friday_message()
         await notify_service.notify_all_users(
             plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"
-        ),
+        )
+
+    @listen_to("/monday_message", re.IGNORECASE)
+    @inject
+    async def test_monday_message(
+        self, message: Message, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ) -> None:
+        await notify_service.meeting_notifications(plugin=self)
 
     @inject
     def on_start(
         self,
         notify_service: NotifyService = Provide[Container.week_routine_service,],
-        scheduler: AsyncIOScheduler = Provide[Container.scheduler,],
+        matching_service: MatchingService = Provide[Container.matching_service],
+        scheduler: AsyncIOScheduler = Provide[Container.scheduler],
     ) -> None:
         attachments = self.direct_friday_message()
 
         scheduler.add_job(
             notify_service.notify_all_users,
             "cron",
-            day_of_week=DAY_OF_WEEK_FRI,
+            day_of_week=DAY_OF_WEEK_FRIDAY,
             hour=FRIDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
         )
-
+        scheduler.add_job(
+            matching_service.run_matching,
+            "cron",
+            day_of_week=DAY_OF_WEEK_SUNDAY,
+            hour=SUNDAY_TIME_SENDING_MESSAGE,
+        )
+        scheduler.add_job(
+            notify_service.meeting_notifications,
+            "cron",
+            day_of_week=DAY_OF_WEEK_MONDAY,
+            hour=MONDAY_TIME_SENDING_MESSAGE,
+            kwargs=dict(plugin=self),
+        )
         scheduler.start()
 
     @listen_to("/stop_jobs", re.IGNORECASE)
@@ -81,7 +107,7 @@ class WeekRoutine(Plugin):
         self,
         event: ActionEvent,
     ) -> None:
-        await self._change_user_status(event.channel_id)
+        await self._change_user_status(event.user_id)
         self.driver.respond_to_web(
             event,
             {

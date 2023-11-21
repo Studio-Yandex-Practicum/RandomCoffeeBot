@@ -1,7 +1,7 @@
 import abc
-from typing import Generic, TypeVar
+from typing import Generic, Sequence, TypeVar
 
-from sqlalchemy import ScalarResult, select, update
+from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -60,11 +60,11 @@ class AbstractRepository(abc.ABC, Generic[Model]):
             await session.commit()
         return instances
 
-    async def get_all(self) -> ScalarResult[Model]:
+    async def get_all(self) -> Sequence[Model]:
         """Возвращает все объекты модели из базы данных."""
         async with self._sessionmaker() as session:
             objects = await session.scalars(select(self._model))
-        return objects
+        return objects.all()
 
     async def create_all(self, instances: list[Model]) -> None:
         """Создает несколько объектов модели в базе данных."""
