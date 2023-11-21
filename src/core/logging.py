@@ -2,6 +2,7 @@ import logging
 import logging.config
 import os
 import sys
+from types import TracebackType
 
 import structlog
 from structlog.types import Processor
@@ -87,7 +88,9 @@ def init_logging(settings: Settings) -> None:
 
     root_logger = logging.getLogger()
 
-    def handle_exception(exc_type, exc_value, exc_traceback):
+    def handle_exception(
+        exc_type: type[BaseException], exc_value: BaseException, exc_traceback: TracebackType | None
+    ) -> None:
         if issubclass(exc_type, KeyboardInterrupt):
             sys.__excepthook__(exc_type, exc_value, exc_traceback)
             return
