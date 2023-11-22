@@ -1,4 +1,3 @@
-# mypy: disable-error-code="misc"
 import re
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
