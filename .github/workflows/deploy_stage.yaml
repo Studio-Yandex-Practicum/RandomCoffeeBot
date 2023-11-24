@@ -103,11 +103,8 @@ jobs:
             MATTERMOST_URL=${{ secrets.MATTERMOST_URL }}
             MATTERMOST_PORT=${{ secrets.MATTERMOST_PORT }}
             MATTERMOST_API_PATH=${{ secrets.MATTERMOST_API_PATH }}
-            LOG_MIN_ERROR_LEVEL=${{ secrets.LOG_MIN_ERROR_LEVEL }}
             LOGGER_NAME=${{ secrets.LOGGER_NAME }}
             LOG_ROOT=${{ secrets.LOG_ROOT }}
-            LOG_MIN_ERROR_LEVEL=${{ secrets.LOG_MIN_ERROR_LEVEL }}
-            LOGGER_NAME=${{ env.LOGGER_NAME }}
             EOM
 
   start_application:
