@@ -15,12 +15,15 @@ class NotifyService:
         self._user_repository = user_repository
         self._match_repository = match_repository
 
-    async def notify_all_users(self, plugin, attachments: Attachment, title: str = "Еженедельный опрос"):
+    async def notify_all_users(
+        self, plugin: Plugin, attachments: Attachment, title: str = "Еженедельный опрос"
+    ) -> None:
         """Функция отправки еженедельного сообщения (создания поста)"""
 
         users_id = await self._user_repository.get_all_chat_id()
         if not users_id:
-            return logger.error("Пользователи отсутствуют.")
+            logger.error("Пользователи отсутствуют.")
+            return None
         for user_id in users_id:
             try:
                 plugin.driver.direct_message(
@@ -29,7 +32,7 @@ class NotifyService:
             except InvalidOrMissingParameters:
                 logger.error(f"Пользователя с таким user_id {user_id} нет в matter_most")
 
-    async def set_waiting_meeting_status(self, user_id: str):
+    async def set_waiting_meeting_status(self, user_id: str) -> None:
         await self._user_repository.set_waiting_meeting_status(user_id)
 
     async def meeting_notifications(self, plugin: Plugin) -> None:

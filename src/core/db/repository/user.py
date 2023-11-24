@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from sqlalchemy import select
 from sqlalchemy.orm import joinedload
 
@@ -8,7 +10,7 @@ from src.core.db.repository.base import AbstractRepository
 class UserRepository(AbstractRepository[User]):
     _model = User
 
-    async def get_all_chat_id(self) -> list[str] | None:
+    async def get_all_chat_id(self) -> Sequence[str] | None:
         """Получает все user id для маттермост"""
         async with self._sessionmaker() as session:
             instance = await session.execute(select(self._model.user_id))
@@ -26,7 +28,7 @@ class UserRepository(AbstractRepository[User]):
             return await self.create(instance)
         return await self.update(db_instance.id, instance)
 
-    async def get_by_status(self, status: str) -> list[User] | None:
+    async def get_by_status(self, status: str) -> Sequence[User]:
         """Получает пользователей по статусу участия во встречах."""
         async with self._sessionmaker() as session:
             users = await session.scalars(select(self._model).where(self._model.status == status))
@@ -35,17 +37,18 @@ class UserRepository(AbstractRepository[User]):
     async def get_free_user(self) -> User | None:
         """Получает пользователя ожидающего встречи."""
         async with self._sessionmaker() as session:
-            return await session.scalar(
+            user: User | None = await session.scalar(
                 select(self._model)
                 .options(joinedload(self._model.matches))
                 .where(self._model.status == StatusEnum.WAITING_MEETING)
                 .limit(1)
             )
+            return user
 
     async def get_suitable_pair(self, user: User) -> User | None:
         """Возвращает подходящего для встречи пользователя."""
         async with self._sessionmaker() as session:
-            return await session.scalar(
+            pair: User | None = await session.scalar(
                 select(self._model)
                 .options(joinedload(self._model.matches))
                 .where(self._model.id != user.id, self._model.status == StatusEnum.WAITING_MEETING)
@@ -57,6 +60,7 @@ class UserRepository(AbstractRepository[User]):
                 )
                 .limit(1)
             )
+            return pair
 
     async def set_in_meeting_status(self, user_id: int) -> None:
         """Устанавливает статус in_meeting для встречи после опроса."""
@@ -68,5 +72,6 @@ class UserRepository(AbstractRepository[User]):
         """Устанавливает статус waiting_meeting для встречи после еженедельного опроса."""
         async with self._sessionmaker() as session:
             current_user = await session.scalar(select(self._model).where(self._model.user_id == user_id))
-        current_user.status = StatusEnum.WAITING_MEETING
-        await self.update(current_user.id, current_user)
+        if current_user is not None:
+            current_user.status = StatusEnum.WAITING_MEETING
+            await self.update(current_user.id, current_user)

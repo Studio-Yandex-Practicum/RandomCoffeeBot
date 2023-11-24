@@ -36,4 +36,4 @@ class Container(containers.DeclarativeContainer):
         NotifyService, user_repository=user_repository, match_repository=match_repository
     )
     # Scheduler
-    scheduler = providers.Singleton(AsyncIOScheduler)
+    scheduler: AsyncIOScheduler = providers.Singleton(AsyncIOScheduler)
