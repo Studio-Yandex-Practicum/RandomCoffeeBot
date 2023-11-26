@@ -15,3 +15,11 @@ class ObjectAlreadyExistsError(Exception):
 
     def __str__(self) -> str:
         return self.detail
+
+
+class MatchNotFoundError(Exception):
+    def __init__(self, user_id: str) -> None:
+        self.detail = f"Встреча пользователя с user_id {user_id} не найдена"
+
+    def __str__(self) -> str:
+        return self.detail

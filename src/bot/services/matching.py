@@ -35,3 +35,13 @@ class MatchingService:
             user.status = StatusEnum.NOT_INVOLVED
             await self._user_repository.update(user.id, user)
         return await self._match_repository.closing_meetings()
+
+    async def get_match_pair_nickname(self, user_id: str) -> str:
+        """Возвращает никнейм второго пользователя
+        по user_id первого пользователя"""
+        match = await self._match_repository.get_by_user_id(user_id)
+        if user_id == match.object_user_one.user_id:
+            user = match.object_user_one
+        elif user_id == match.object_user_two.user_id:
+            user = match.object_user_two
+        return user.username

@@ -1,7 +1,7 @@
 from datetime import date
 from enum import StrEnum
 
-from sqlalchemy import ForeignKey, String, func
+from sqlalchemy import ForeignKey, Integer, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
 SERVER_DEFAULT_TIME = func.current_timestamp()
@@ -16,6 +16,12 @@ class StatusEnum(StrEnum):
 class MatchStatusEnum(StrEnum):
     ONGOING = "ONGOING"
     CLOSED = "CLOSED"
+
+
+class MatchReviewAnswerEnum(StrEnum):
+    YES = "YES"
+    NO = "NO"
+    NO_ANSWER = "NO_ANSWER"
 
 
 class Base(DeclarativeBase):
@@ -59,3 +65,12 @@ class UsersMatch(Base):
 
     object_user_one = relationship("User", foreign_keys=[matched_user_one], backref="matches_as_user_one")
     object_user_two = relationship("User", foreign_keys=[matched_user_two], backref="matches_as_user_two")
+    match_review: Mapped["MatchReview"] = relationship("MatchReview", backref="usersmatch")
+
+
+class MatchReview(Base):
+    __tablename__ = "match_review"
+
+    usersmatch_id: Mapped[int] = mapped_column(Integer(), ForeignKey("usersmatch.id"), nullable=False)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user_answer: Mapped[MatchReviewAnswerEnum] = mapped_column(default=MatchReviewAnswerEnum.NO_ANSWER, nullable=False)

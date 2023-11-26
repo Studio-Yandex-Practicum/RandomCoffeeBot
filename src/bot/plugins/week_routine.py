@@ -7,6 +7,7 @@ from mmpy_bot import ActionEvent, Plugin, listen_to, listen_webhook
 from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
+from src.core.db.models import MatchReviewAnswerEnum
 from src.depends import Container
 from src.endpoints import Endpoints
 
@@ -16,6 +17,8 @@ FRIDAY_TIME_SENDING_MESSAGE = 11
 DAY_OF_WEEK_FRIDAY = "fri"
 SUNDAY_TIME_SENDING_MESSAGE = 11
 DAY_OF_WEEK_SUNDAY = "sun"
+WEDNESDAY_TIME_SENDING_MESSAGE = 11
+DAY_OF_WEEK_WEDNESDAY = "wed"
 
 
 class WeekRoutine(Plugin):
@@ -121,3 +124,81 @@ class WeekRoutine(Plugin):
                 "update": {"message": "На следующей неделе отправлю новое предложение.", "props": {}},
             },
         )
+
+    @inject
+    def direct_wednesday_message(self, endpoints: Endpoints = Provide[Container.endpoints]):
+        action_yes = Actions(
+            id="yes",
+            name="Да",
+            type="button",
+            integration=Integration(url=endpoints.answer_yes, context=Context(action="yes")),
+        )
+
+        action_no = Actions(
+            id="No",
+            name="Нет",
+            type="button",
+            integration=Integration(url=endpoints.answer_no, context=Context(action="no")),
+        )
+
+        every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
+        return every_wednesday_message
+
+    @listen_webhook("match_review_answer_yes")
+    async def answer_yes(
+        self,
+        event: ActionEvent,
+    ):
+        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.YES)
+        self.driver.respond_to_web(
+            event,
+            {
+                "update": {
+                    "message": "Поделитесь итогами вашей встречи в канале "
+                    '"Coffe на этой неделе", отправьте фото и '
+                    "краткие эмоции, чтобы мотивировать других "
+                    "поучаствовать в Random Coffee!",
+                    "props": {},
+                },
+            },
+        )
+
+    @listen_webhook("match_review_answer_no")
+    async def answer_no(
+        self,
+        event: ActionEvent,
+    ):
+        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.NO)
+        user_nickname = await self._get_pair_nickname(event.user_id)
+        self.driver.respond_to_web(
+            event,
+            {
+                "update": {
+                    "message": f"Неделя скоро закончится, не забудь "
+                    f"познакомиться с новым человеком и провести "
+                    f"время за классным разговором, напиши "
+                    f"{user_nickname} точно ждёт вашей встречи",
+                    "props": {},
+                },
+            },
+        )
+
+    @inject
+    async def _save_user_answer(
+        self, user_id: str, answer: str, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ):
+        await notify_service.set_match_review_answer(user_id, answer)
+
+    @inject
+    async def _get_pair_nickname(
+        self, user_id: str, matching_service: MatchingService = Provide[Container.week_routine_service,]
+    ) -> str:
+        return await matching_service.get_match_pair_nickname(user_id)
+
+    @listen_to("/wednesday_message", re.IGNORECASE)
+    @inject
+    async def test_wednesday_message(
+        self, message: str, notify_service: NotifyService = Provide[Container.week_routine_service,]
+    ):
+        attachments = self.direct_wednesday_message()
+        await notify_service.match_review_notifications(plugin=self, attachments=attachments)

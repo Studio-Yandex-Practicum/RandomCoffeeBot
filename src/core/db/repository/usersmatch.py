@@ -1,9 +1,9 @@
 from sqlalchemy import select, update
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import aliased, selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
-from src.core.exceptions.exceptions import ObjectAlreadyExistsError
+from src.core.exceptions.exceptions import MatchNotFoundError, ObjectAlreadyExistsError
 
 
 class UsersMatchRepository(AbstractRepository[UsersMatch]):
@@ -48,3 +48,21 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
                 .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
                 .where(self._model.status == status)
             )
+
+    async def get_by_user_id(self, user_id: str) -> UsersMatch:
+        """Получает текущую встречу по user_id участника"""
+        async with self._sessionmaker() as session:
+            matched_user_one = aliased(User)
+            matched_user_two = aliased(User)
+            match = await session.scalar(
+                select(UsersMatch)
+                .join(matched_user_one, UsersMatch.matched_user_one)
+                .join(matched_user_two, UsersMatch.matched_user_two)
+                .where(
+                    (matched_user_one.user_id == user_id)
+                    | (matched_user_two.user_id == user_id) & (UsersMatch.status == MatchStatusEnum.ONGOING)
+                )
+            )
+            if match is None:
+                raise MatchNotFoundError(user_id)
+            return match
