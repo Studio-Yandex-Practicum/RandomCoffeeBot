@@ -32,3 +32,12 @@ repos:
   rev: 'v1.6.1'
   hooks:
     - id: mypy
+      args: [--strict]
+      additional_dependencies: [
+        'sqlalchemy',
+        'structlog',
+        'dependency_injector',
+        'faker',
+        'pydantic',
+        'pydantic_settings'
+      ]
