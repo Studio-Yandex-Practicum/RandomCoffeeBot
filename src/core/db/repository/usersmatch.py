@@ -5,7 +5,7 @@ from sqlalchemy.orm import aliased, selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
-from src.core.exceptions.exceptions import MatchNotFoundError, ObjectAlreadyExistsError
+from src.core.exceptions.exceptions import MatchNotFoundError, ObjectAlreadyExistsError, TooManyMatchesError
 
 
 class UsersMatchRepository(AbstractRepository[UsersMatch]):
@@ -57,15 +57,19 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
         async with self._sessionmaker() as session:
             matched_user_one = aliased(User)
             matched_user_two = aliased(User)
-            match = await session.scalar(
-                select(UsersMatch)
-                .join(matched_user_one, UsersMatch.matched_user_one)
-                .join(matched_user_two, UsersMatch.matched_user_two)
+            result = await session.scalars(
+                select(self._model)
+                .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
+                .join(matched_user_one, self._model.object_user_one)
+                .join(matched_user_two, self._model.object_user_two)
                 .where(
-                    (matched_user_one.user_id == user_id)
-                    | (matched_user_two.user_id == user_id) & (UsersMatch.status == MatchStatusEnum.ONGOING)
+                    (self._model.status == MatchStatusEnum.ONGOING)
+                    & ((matched_user_one.user_id == user_id) | (matched_user_two.user_id == user_id))
                 )
             )
-            if match is None:
+            matches = result.all()
+            if not matches:
                 raise MatchNotFoundError(user_id)
-            return match
+            elif len(matches) > 1:
+                raise TooManyMatchesError(user_id)
+            return matches[0]

@@ -23,3 +23,11 @@ class MatchNotFoundError(Exception):
 
     def __str__(self) -> str:
         return self.detail
+
+
+class TooManyMatchesError(Exception):
+    def __init__(self, user_id: str) -> None:
+        self.detail = f"У пользователя с user_id {user_id} " f"найдено несколько встреч на этой неделе"
+
+    def __str__(self) -> str:
+        return self.detail

@@ -193,7 +193,7 @@ class WeekRoutine(Plugin):
 
     @inject
     async def _get_pair_nickname(
-        self, user_id: str, matching_service: MatchingService = Provide[Container.week_routine_service,]
+        self, user_id: str, matching_service: MatchingService = Provide[Container.matching_service,]
     ) -> Any:
         return await matching_service.get_match_pair_nickname(user_id)
 
@@ -204,3 +204,16 @@ class WeekRoutine(Plugin):
     ) -> None:
         attachments = self.direct_wednesday_message()
         await notify_service.match_review_notifications(plugin=self, attachments=attachments)
+
+    # @listen_to("/test", re.IGNORECASE)
+    # @inject
+    # async def test_function(
+    #     self, message: Message, notify_service: NotifyService = Provide[
+    #         Container.week_routine_service,]
+    # ) -> None:
+    #     user_id = message.user_id
+    #     await notify_service.set_match_review_answer(
+    #         user_id, MatchReviewAnswerEnum.YES
+    #     )
+    #     user_nickname = await self._get_pair_nickname(user_id)
+    #     print(user_nickname)
