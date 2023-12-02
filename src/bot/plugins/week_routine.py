@@ -69,14 +69,15 @@ class WeekRoutine(Plugin):
         matching_service: MatchingService = Provide[Container.matching_service],
         scheduler: AsyncIOScheduler = Provide[Container.scheduler],
     ) -> None:
-        attachments = self.direct_friday_message()
+        friday_attachments = self.direct_friday_message()
+        wednesday_attachments = self.direct_wednesday_message()
 
         scheduler.add_job(
             notify_service.notify_all_users,
             "cron",
             day_of_week=DAY_OF_WEEK_FRIDAY,
             hour=FRIDAY_TIME_SENDING_MESSAGE,
-            kwargs=dict(plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"),
+            kwargs=dict(plugin=self, attachments=friday_attachments, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
             matching_service.run_matching,
@@ -90,6 +91,13 @@ class WeekRoutine(Plugin):
             day_of_week=DAY_OF_WEEK_MONDAY,
             hour=MONDAY_TIME_SENDING_MESSAGE,
             kwargs=dict(plugin=self),
+        )
+        scheduler.add_job(
+            notify_service.match_review_notifications,
+            "cron",
+            day_of_week=DAY_OF_WEEK_WEDNESDAY,
+            hour=WEDNESDAY_TIME_SENDING_MESSAGE,
+            kwargs=dict(plugin=self, attachments=wednesday_attachments),
         )
         scheduler.start()
 
