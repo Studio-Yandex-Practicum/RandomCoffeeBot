@@ -90,6 +90,7 @@ jobs:
             mv docker-compose.prod.yml docker-compose.yaml
             rm -f .env
             cat > .env <<- EOM
+            HOST=${{ secrets.BOT_HOST }}
             POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
