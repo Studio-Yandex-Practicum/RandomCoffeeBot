@@ -1,5 +1,6 @@
 from datetime import date
 from enum import StrEnum
+from typing import Optional
 
 from sqlalchemy import ForeignKey, Integer, String, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
@@ -19,9 +20,8 @@ class MatchStatusEnum(StrEnum):
 
 
 class MatchReviewAnswerEnum(StrEnum):
-    YES = "YES"
-    NO = "NO"
-    NO_ANSWER = "NO_ANSWER"
+    IS_COMPLETE = "IS_COMPLETE"
+    IS_NOT_COMPLETE = "IS_NOT_COMPLETE"
 
 
 class Base(DeclarativeBase):
@@ -72,4 +72,4 @@ class MatchReview(Base):
 
     usersmatch_id: Mapped[int] = mapped_column(Integer(), ForeignKey("usersmatch.id"), nullable=False)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user_answer: Mapped[MatchReviewAnswerEnum] = mapped_column(default=MatchReviewAnswerEnum.NO_ANSWER, nullable=False)
+    user_answer: Mapped[Optional[MatchReviewAnswerEnum]] = mapped_column(nullable=True)

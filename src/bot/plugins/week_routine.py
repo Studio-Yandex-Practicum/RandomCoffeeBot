@@ -159,7 +159,7 @@ class WeekRoutine(Plugin):
         self,
         event: ActionEvent,
     ) -> None:
-        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.YES)
+        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.IS_COMPLETE)
         self.driver.respond_to_web(
             event,
             {
@@ -178,7 +178,7 @@ class WeekRoutine(Plugin):
         self,
         event: ActionEvent,
     ) -> None:
-        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.NO)
+        await self._save_user_answer(event.user_id, MatchReviewAnswerEnum.IS_NOT_COMPLETE)
         user_nickname = await self._get_pair_nickname(event.user_id)
         self.driver.respond_to_web(
             event,
