@@ -74,29 +74,25 @@ class WeekRoutine(Plugin):
 
         scheduler.add_job(
             notify_service.notify_all_users,
-            "cron",
-            day_of_week=DAY_OF_WEEK_FRIDAY,
-            hour=FRIDAY_TIME_SENDING_MESSAGE,
+            "interval",
+            minutes=1,
             kwargs=dict(plugin=self, attachments=friday_attachments, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
             matching_service.run_matching,
-            "cron",
-            day_of_week=DAY_OF_WEEK_SUNDAY,
-            hour=SUNDAY_TIME_SENDING_MESSAGE,
+            "interval",
+            minutes=1,
         )
         scheduler.add_job(
             notify_service.meeting_notifications,
-            "cron",
-            day_of_week=DAY_OF_WEEK_MONDAY,
-            hour=MONDAY_TIME_SENDING_MESSAGE,
+            "interval",
+            minutes=1,
             kwargs=dict(plugin=self),
         )
         scheduler.add_job(
             notify_service.match_review_notifications,
-            "cron",
-            day_of_week=DAY_OF_WEEK_WEDNESDAY,
-            hour=WEDNESDAY_TIME_SENDING_MESSAGE,
+            "interval",
+            minutes=1,
             kwargs=dict(plugin=self, attachments=wednesday_attachments),
         )
         scheduler.start()
