@@ -16,3 +16,11 @@ class Endpoints:
     @property
     def not_meeting(self) -> str:
         return self.host_append("/hooks/not_meeting")
+
+    @property
+    def answer_yes(self) -> str:
+        return self.host_append("/hooks/match_review_answer_yes")
+
+    @property
+    def answer_no(self) -> str:
+        return self.host_append("/hooks/match_review_answer_no")
