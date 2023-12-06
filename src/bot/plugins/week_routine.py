@@ -82,7 +82,6 @@ class WeekRoutine(Plugin):
             matching_service.run_matching,
             "interval",
             seconds=10,
-            hour=SUNDAY_TIME_SENDING_MESSAGE,
         )
         scheduler.add_job(
             notify_service.meeting_notifications,
@@ -92,9 +91,8 @@ class WeekRoutine(Plugin):
         )
         scheduler.add_job(
             notify_service.match_review_notifications,
-            "cron",
-            day_of_week=DAY_OF_WEEK_WEDNESDAY,
-            hour=WEDNESDAY_TIME_SENDING_MESSAGE,
+            "interval",
+            seconds=10,
             kwargs=dict(plugin=self, attachments=wednesday_attachments),
         )
         scheduler.start()
