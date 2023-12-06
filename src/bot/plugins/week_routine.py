@@ -75,24 +75,24 @@ class WeekRoutine(Plugin):
         scheduler.add_job(
             notify_service.notify_all_users,
             "interval",
-            seconds=10,
+            minutes=1,
             kwargs=dict(plugin=self, attachments=friday_attachments, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
             matching_service.run_matching,
             "interval",
-            seconds=10,
+            minutes=1,
         )
         scheduler.add_job(
             notify_service.meeting_notifications,
             "interval",
-            seconds=10,
+            minutes=1,
             kwargs=dict(plugin=self),
         )
         scheduler.add_job(
             notify_service.match_review_notifications,
             "interval",
-            seconds=10,
+            minutes=1,
             kwargs=dict(plugin=self, attachments=wednesday_attachments),
         )
         scheduler.start()
