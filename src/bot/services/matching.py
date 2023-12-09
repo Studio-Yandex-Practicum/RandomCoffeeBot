@@ -16,19 +16,19 @@ class MatchingService:
         self._user_repository = user_repository
         self._match_repository = match_repository
 
-    async def run_matching(self) -> list[UsersMatch] | None:
+    async def run_matching(self) -> str:
         """Запускает создание метчей."""
         matches: list[UsersMatch] = []
         while user_one := await self._user_repository.get_free_user():
             if not (user_two := await self._user_repository.get_suitable_pair(user_one)):
                 log.info(f"Невозможно создать пару для пользователя с id {user_one.id}.")
-                return None
+                return f"Невозможно создать пару для пользователя {user_one.username}."
             matches.append(match := await self._match_repository.make_match_for_user(user_one, user_two))
             for user in (user_one, user_two):
                 user.status = StatusEnum.IN_MEETING
                 user.matches.append(match)
                 await self._user_repository.update(user.id, user)
-        return matches
+        return "Создание пар завершено"
 
     async def run_closing_meetings(self) -> Sequence[UsersMatch]:
         """Запускает закрытие встреч."""

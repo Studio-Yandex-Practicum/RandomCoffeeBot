@@ -7,13 +7,18 @@ class AdminService:
         self._admin_repository = admin_repository
         self._admin_username = admin_username
 
-    async def add_admin_if_in_settings(self, instance: Admin) -> None:
+    async def add_admin_if_in_settings(self, instance: Admin) -> bool | None:
         if instance.username == self._admin_username:
             await self._admin_repository.create(instance)
-
-    async def check_if_admin(self, user_id: int, instance: Admin) -> bool | None:
-        await self.add_admin_if_in_settings(instance)
-        if self._admin_repository.get_by_user_id(user_id) is not None:
             return True
         else:
-            return None
+            return False
+
+    async def check_if_admin(self, user_id: int, instance: Admin) -> bool | None:
+        # await self.add_admin_if_in_settings(instance)
+        if await self._admin_repository.get_by_user_id(user_id) is not None:
+            return True
+        elif await self.add_admin_if_in_settings(instance):
+            return True
+        else:
+            return False
