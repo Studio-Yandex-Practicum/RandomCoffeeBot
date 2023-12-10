@@ -141,20 +141,20 @@ class WeekRoutine(Plugin):
             id="yes",
             name="Да",
             type="button",
-            integration=Integration(url=endpoints.answer_yes, context=Context(action="yes")),
+            integration=Integration(url=endpoints.match_review_is_complete, context=Context(action="yes")),
         )
 
         action_no = Actions(
             id="No",
             name="Нет",
             type="button",
-            integration=Integration(url=endpoints.answer_no, context=Context(action="no")),
+            integration=Integration(url=endpoints.match_review_is_not_complete, context=Context(action="no")),
         )
 
         every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
         return every_wednesday_message
 
-    @listen_webhook("match_review_answer_yes")
+    @listen_webhook("match_review_is_complete")
     async def answer_yes(
         self,
         event: ActionEvent,
@@ -165,7 +165,7 @@ class WeekRoutine(Plugin):
             {
                 "update": {
                     "message": "Поделитесь итогами вашей встречи в канале "
-                    '"Coffe на этой неделе", отправьте фото и '
+                    '"Coffee на этой неделе", отправьте фото и '
                     "краткие эмоции, чтобы мотивировать других "
                     "поучаствовать в Random Coffee!",
                     "props": {},
@@ -173,7 +173,7 @@ class WeekRoutine(Plugin):
             },
         )
 
-    @listen_webhook("match_review_answer_no")
+    @listen_webhook("match_review_is_not_complete")
     async def answer_no(
         self,
         event: ActionEvent,

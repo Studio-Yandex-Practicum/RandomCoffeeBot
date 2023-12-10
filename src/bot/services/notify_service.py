@@ -74,3 +74,5 @@ class NotifyService:
                     )
                 except InvalidOrMissingParameters as error:
                     logger.error(str(error))
+            match.status = MatchStatusEnum.CLOSED
+            await self._match_repository.update(instance_id=match.id, instance=match)

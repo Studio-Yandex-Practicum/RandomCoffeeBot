@@ -18,9 +18,9 @@ class Endpoints:
         return self.host_append("/hooks/not_meeting")
 
     @property
-    def answer_yes(self) -> str:
-        return self.host_append("/hooks/match_review_answer_yes")
+    def match_review_is_complete(self) -> str:
+        return self.host_append("/hooks/match_review_is_complete")
 
     @property
-    def answer_no(self) -> str:
-        return self.host_append("/hooks/match_review_answer_no")
+    def match_review_is_not_complete(self) -> str:
+        return self.host_append("/hooks/match_review_is_not_complete")
