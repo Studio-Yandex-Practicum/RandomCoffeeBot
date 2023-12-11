@@ -27,8 +27,6 @@ class WeekRoutine(Plugin):
         matching_service: MatchingService = Provide[Container.matching_service],
         scheduler: AsyncIOScheduler = Provide[Container.scheduler],
     ) -> None:
-        friday_attachments = self.direct_friday_message()
-
         scheduler.add_job(
             notify_service.notify_all_users,
             "cron",
@@ -86,25 +84,6 @@ class WeekRoutine(Plugin):
             },
         )
 
-    @inject
-    def direct_wednesday_message(self, endpoints: Endpoints = Provide[Container.endpoints]) -> Attachment:
-        action_yes = Actions(
-            id="yes",
-            name="Да",
-            type="button",
-            integration=Integration(url=endpoints.match_review_is_complete, context=Context(action="yes")),
-        )
-
-        action_no = Actions(
-            id="No",
-            name="Нет",
-            type="button",
-            integration=Integration(url=endpoints.match_review_is_not_complete, context=Context(action="no")),
-        )
-
-        every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
-        return every_wednesday_message
-
     @listen_webhook("match_review_is_complete")
     async def answer_yes(
         self,
@@ -156,19 +135,10 @@ class WeekRoutine(Plugin):
     ) -> Any:
         return await matching_service.get_match_pair_nickname(user_id)
 
-    @listen_to("/wednesday_message", re.IGNORECASE)
-    @inject
-    async def test_wednesday_message(
-        self, message: str, notify_service: NotifyService = Provide[Container.week_routine_service,]
-    ) -> None:
-        attachments = self.direct_wednesday_message()
-        await notify_service.match_review_notifications(plugin=self, attachments=attachments)
-
     async def wednesday_notification_and_closing_meetings(
         self,
         notify_service: NotifyService,
         matching_service: MatchingService,
     ) -> None:
-        attachments = self.direct_wednesday_message()
-        await notify_service.match_review_notifications(plugin=self, attachments=attachments)
+        await notify_service.match_review_notifications(plugin=self)
         await matching_service.run_closing_meetings()

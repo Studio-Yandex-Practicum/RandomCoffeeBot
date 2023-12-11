@@ -89,14 +89,14 @@ class NotifyService:
             id="yes",
             name="Да",
             type="button",
-            integration=Integration(url=self._endpoints.answer_yes, context=Context(action="yes")),
+            integration=Integration(url=self._endpoints.match_review_is_complete, context=Context(action="yes")),
         )
 
         action_no = Actions(
             id="No",
             name="Нет",
             type="button",
-            integration=Integration(url=self._endpoints.answer_no, context=Context(action="no")),
+            integration=Integration(url=self._endpoints.match_review_is_not_complete, context=Context(action="no")),
         )
 
         every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
