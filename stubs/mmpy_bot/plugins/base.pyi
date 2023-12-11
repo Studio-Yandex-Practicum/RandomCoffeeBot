@@ -53,7 +53,7 @@ class FunctionInfo:
 
 def get_function_characteristics(function: FunctionInfo) -> tuple[bool, bool, str]: ...
 def generate_plugin_help(
-    listeners: Dict[re.Pattern[Any], List[Union[MessageFunction, WebHookFunction]]]
+    listeners: Dict[re.Pattern[Any], List[Union[MessageFunction[Any], WebHookFunction]]]
 ) -> list[FunctionInfo]: ...
 
 class PluginManager:
