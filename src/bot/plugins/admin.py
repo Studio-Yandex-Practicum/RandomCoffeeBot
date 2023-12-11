@@ -4,8 +4,8 @@ from typing import Any, Generic, Protocol, TypeVar
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dependency_injector.wiring import Provide, inject
-
 from mmpy_bot import Message, Plugin, listen_to
+
 from src.bot.services.admin import AdminService
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService

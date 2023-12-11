@@ -3,7 +3,6 @@ from abc import ABC
 from typing import Any, Dict, List, Optional, Sequence, Union
 
 from _typeshed import Incomplete
-
 from mmpy_bot.driver import Driver as Driver
 from mmpy_bot.function import Function as Function
 from mmpy_bot.function import MessageFunction as MessageFunction

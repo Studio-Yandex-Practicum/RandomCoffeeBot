@@ -2,7 +2,6 @@ from abc import ABC
 from typing import Any, Callable, Generic, Protocol, TypeVar
 
 from _typeshed import Incomplete
-
 from mmpy_bot.plugins import Plugin as Plugin
 from mmpy_bot.utils import completed_future as completed_future
 from mmpy_bot.webhook_server import NoResponse as NoResponse
