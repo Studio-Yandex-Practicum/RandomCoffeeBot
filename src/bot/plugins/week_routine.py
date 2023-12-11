@@ -70,7 +70,6 @@ class WeekRoutine(Plugin):
         scheduler: AsyncIOScheduler = Provide[Container.scheduler],
     ) -> None:
         friday_attachments = self.direct_friday_message()
-        wednesday_attachments = self.direct_wednesday_message()
 
         scheduler.add_job(
             notify_service.notify_all_users,
@@ -93,11 +92,11 @@ class WeekRoutine(Plugin):
             kwargs=dict(plugin=self),
         )
         scheduler.add_job(
-            notify_service.match_review_notifications,
+            self.wednesday_notification_and_closing_meetings,
             "cron",
             day_of_week=DAY_OF_WEEK_WEDNESDAY,
             hour=WEDNESDAY_TIME_SENDING_MESSAGE,
-            kwargs=dict(plugin=self, attachments=wednesday_attachments),
+            kwargs=dict(notify_service=notify_service, matching_service=matching_service),
         )
         scheduler.start()
 
@@ -212,3 +211,12 @@ class WeekRoutine(Plugin):
     ) -> None:
         attachments = self.direct_wednesday_message()
         await notify_service.match_review_notifications(plugin=self, attachments=attachments)
+
+    async def wednesday_notification_and_closing_meetings(
+        self,
+        notify_service: NotifyService,
+        matching_service: MatchingService,
+    ) -> None:
+        attachments = self.direct_wednesday_message()
+        await notify_service.match_review_notifications(plugin=self, attachments=attachments)
+        await matching_service.run_closing_meetings()
