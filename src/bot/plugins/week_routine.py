@@ -86,7 +86,6 @@ class WeekRoutine(Plugin):
             },
         )
 
-
     @inject
     def direct_wednesday_message(self, endpoints: Endpoints = Provide[Container.endpoints]) -> Attachment:
         action_yes = Actions(
