@@ -1,12 +1,14 @@
 import structlog
+from dependency_injector.wiring import inject
 from mattermostautodriver.exceptions import InvalidOrMissingParameters
 from mmpy_bot import Plugin
 
-from src.bot.schemas import Attachment
+from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.core.db.models import MatchStatusEnum, User
 from src.core.db.repository.match_review import MatchReviewRepository
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
+from src.endpoints import Endpoints
 
 logger = structlog.get_logger()
 
@@ -17,16 +19,38 @@ class NotifyService:
         user_repository: UserRepository,
         match_repository: UsersMatchRepository,
         match_review_repository: MatchReviewRepository,
+        endpoints: Endpoints,
     ) -> None:
         self._user_repository = user_repository
         self._match_repository = match_repository
         self._match_review_repository = match_review_repository
+        self._endpoints = endpoints
 
-    async def notify_all_users(
-        self, plugin: Plugin, attachments: Attachment, title: str = "Еженедельный опрос"
-    ) -> None:
+    @inject
+    def direct_friday_message(self) -> Attachment:
+        action_yes = Actions(
+            id="yes",
+            name="Да",
+            type="button",
+            integration=Integration(url=self._endpoints.add_to_meeting, context=Context(action="yes")),
+        )
+
+        action_no = Actions(
+            id="No",
+            name="Нет",
+            type="button",
+            integration=Integration(url=self._endpoints.not_meeting, context=Context(action="no")),
+        )
+
+        every_friday_message = Attachment(
+            text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
+        )
+        return every_friday_message
+
+    async def notify_all_users(self, plugin: Plugin, title: str = "Еженедельный опрос") -> None:
         """Функция отправки еженедельного сообщения (создания поста)"""
 
+        friday_attachments = self.direct_friday_message()
         users_id = await self._user_repository.get_all_chat_id()
         if not users_id:
             logger.error("Пользователи отсутствуют.")
@@ -34,7 +58,7 @@ class NotifyService:
         for user_id in users_id:
             try:
                 plugin.driver.direct_message(
-                    receiver_id=user_id, message=title, props={"attachments": [attachments.model_dump()]}
+                    receiver_id=user_id, message=title, props={"attachments": [friday_attachments.model_dump()]}
                 )
             except InvalidOrMissingParameters:
                 logger.error(f"Пользователя с таким user_id {user_id} нет в matter_most")
@@ -59,12 +83,31 @@ class NotifyService:
         match = await self._match_repository.get_by_user_id(user_id)
         await self._match_review_repository.set_match_review_answer(match, user_id, answer)
 
+    @inject
+    def direct_wednesday_message(self) -> Attachment:
+        action_yes = Actions(
+            id="yes",
+            name="Да",
+            type="button",
+            integration=Integration(url=self._endpoints.answer_yes, context=Context(action="yes")),
+        )
+
+        action_no = Actions(
+            id="No",
+            name="Нет",
+            type="button",
+            integration=Integration(url=self._endpoints.answer_no, context=Context(action="no")),
+        )
+
+        every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
+        return every_wednesday_message
+
     async def match_review_notifications(
         self,
         plugin: Plugin,
-        attachments: Attachment,
         title: str = "Опрос по результатам встречи",
     ) -> None:
+        attachments = self.direct_wednesday_message()
         for match in await self._match_repository.get_by_status(status=MatchStatusEnum.ONGOING):
             pair: list[User] = [match.object_user_one, match.object_user_two]
             for user_one, user_two in zip(pair, pair[::-1]):

@@ -1,17 +1,13 @@
-import re
 from typing import Any
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dependency_injector.wiring import Provide, inject
-from mmpy_bot import ActionEvent, Plugin, listen_to, listen_webhook
-from mmpy_bot.wrappers import Message
+from mmpy_bot import ActionEvent, Plugin, listen_webhook
 
-from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.core.db.models import MatchReviewAnswerEnum
 from src.depends import Container
-from src.endpoints import Endpoints
 
 MONDAY_TIME_SENDING_MESSAGE = 10
 DAY_OF_WEEK_MONDAY = "mon"
@@ -24,44 +20,6 @@ DAY_OF_WEEK_WEDNESDAY = "wed"
 
 
 class WeekRoutine(Plugin):
-    @inject
-    def direct_friday_message(self, endpoints: Endpoints = Provide[Container.endpoints]) -> Attachment:
-        action_yes = Actions(
-            id="yes",
-            name="Да",
-            type="button",
-            integration=Integration(url=endpoints.add_to_meeting, context=Context(action="yes")),
-        )
-
-        action_no = Actions(
-            id="No",
-            name="Нет",
-            type="button",
-            integration=Integration(url=endpoints.not_meeting, context=Context(action="no")),
-        )
-
-        every_friday_message = Attachment(
-            text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
-        )
-        return every_friday_message
-
-    @listen_to("/notify_all_users", re.IGNORECASE)
-    @inject
-    async def test_notify_all_users(
-        self, message: Message, notify_service: NotifyService = Provide[Container.week_routine_service,]
-    ) -> None:
-        attachments = self.direct_friday_message()
-        await notify_service.notify_all_users(
-            plugin=self, attachments=attachments, title="Еженедельный пятничный опрос"
-        )
-
-    @listen_to("/monday_message", re.IGNORECASE)
-    @inject
-    async def test_monday_message(
-        self, message: Message, notify_service: NotifyService = Provide[Container.week_routine_service,]
-    ) -> None:
-        await notify_service.meeting_notifications(plugin=self)
-
     @inject
     def on_start(
         self,
@@ -76,7 +34,7 @@ class WeekRoutine(Plugin):
             "cron",
             day_of_week=DAY_OF_WEEK_FRIDAY,
             hour=FRIDAY_TIME_SENDING_MESSAGE,
-            kwargs=dict(plugin=self, attachments=friday_attachments, title="Еженедельный пятничный опрос"),
+            kwargs=dict(plugin=self, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
             matching_service.run_matching,
@@ -99,12 +57,6 @@ class WeekRoutine(Plugin):
             kwargs=dict(notify_service=notify_service, matching_service=matching_service),
         )
         scheduler.start()
-
-    @listen_to("/stop_jobs", re.IGNORECASE)
-    @inject
-    def cancel_jobs(self, message: Message, scheduler: AsyncIOScheduler = Provide[Container.scheduler,]) -> None:
-        scheduler.shutdown()
-        self.driver.reply_to(message, "All jobs cancelled.")
 
     @inject
     async def _change_user_status(
@@ -133,6 +85,7 @@ class WeekRoutine(Plugin):
                 "update": {"message": "На следующей неделе отправлю новое предложение.", "props": {}},
             },
         )
+
 
     @inject
     def direct_wednesday_message(self, endpoints: Endpoints = Provide[Container.endpoints]) -> Attachment:

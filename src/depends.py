@@ -39,6 +39,7 @@ class Container(containers.DeclarativeContainer):
         user_repository=user_repository,
         match_repository=match_repository,
         match_review_repository=match_review_repository,
+        endpoints=endpoints,
     )
     # Scheduler
     scheduler: AsyncIOScheduler = providers.Singleton(AsyncIOScheduler)
