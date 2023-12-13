@@ -1,8 +1,8 @@
 import structlog
 from dependency_injector.wiring import inject
 from mattermostautodriver.exceptions import InvalidOrMissingParameters
-
 from mmpy_bot import Plugin
+
 from src.bot.schemas import Actions, Attachment, Context, Integration
 from src.core.db.models import MatchStatusEnum, User
 from src.core.db.repository.match_review import MatchReviewRepository

@@ -1,8 +1,8 @@
 import re
 
 from dependency_injector.wiring import Provide, inject
-
 from mmpy_bot import Message, Plugin, listen_to
+
 from src.bot.services.registration import RegistrationService
 from src.core.db.models import User
 from src.depends import Container
