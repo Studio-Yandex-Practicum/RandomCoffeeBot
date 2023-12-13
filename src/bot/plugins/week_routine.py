@@ -2,8 +2,8 @@ from typing import Any
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dependency_injector.wiring import Provide, inject
-from mmpy_bot import ActionEvent, Plugin, listen_webhook
 
+from mmpy_bot import ActionEvent, Plugin, listen_webhook
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.core.db.models import MatchReviewAnswerEnum

@@ -1,5 +1,4 @@
 from mmpy_bot import Bot, Settings
-
 from src.bot.plugins.admin import BotAdmin
 from src.bot.plugins.matching import Matching
 from src.bot.plugins.registration import Registration
