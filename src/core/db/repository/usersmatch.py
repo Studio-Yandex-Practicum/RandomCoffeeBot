@@ -1,11 +1,11 @@
 from typing import Sequence
 
-from sqlalchemy import select, update
+from sqlalchemy import desc, select, update
 from sqlalchemy.orm import aliased, selectinload
 
 from src.core.db.models import MatchStatusEnum, User, UsersMatch
 from src.core.db.repository.base import AbstractRepository
-from src.core.exceptions.exceptions import MatchNotFoundError, ObjectAlreadyExistsError, TooManyMatchesError
+from src.core.exceptions.exceptions import MatchNotFoundError, ObjectAlreadyExistsError
 
 
 class UsersMatchRepository(AbstractRepository[UsersMatch]):
@@ -62,14 +62,10 @@ class UsersMatchRepository(AbstractRepository[UsersMatch]):
                 .options(selectinload(self._model.object_user_one), selectinload(self._model.object_user_two))
                 .join(matched_user_one, self._model.object_user_one)
                 .join(matched_user_two, self._model.object_user_two)
-                .where(
-                    (self._model.status == MatchStatusEnum.ONGOING)
-                    & ((matched_user_one.user_id == user_id) | (matched_user_two.user_id == user_id))
-                )
+                .where((matched_user_one.user_id == user_id) | (matched_user_two.user_id == user_id))
+                .order_by(desc(self._model.created_at))
             )
-            matches = result.all()
-            if not matches:
+            match = result.first()
+            if match is None:
                 raise MatchNotFoundError(user_id)
-            elif len(matches) > 1:
-                raise TooManyMatchesError(user_id)
-            return matches[0]
+            return match

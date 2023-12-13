@@ -48,11 +48,11 @@ class WeekRoutine(Plugin):
             kwargs=dict(plugin=self),
         )
         scheduler.add_job(
-            notify_service.match_review_notifications,
+            self.wednesday_notification_and_closing_meetings,
             "cron",
             day_of_week=DAY_OF_WEEK_WEDNESDAY,
             hour=WEDNESDAY_TIME_SENDING_MESSAGE,
-            kwargs=dict(plugin=self),
+            kwargs=dict(notify_service=notify_service, matching_service=matching_service),
         )
         scheduler.start()
 
@@ -84,7 +84,7 @@ class WeekRoutine(Plugin):
             },
         )
 
-    @listen_webhook("match_review_answer_yes")
+    @listen_webhook("match_review_is_complete")
     async def answer_yes(
         self,
         event: ActionEvent,
@@ -95,7 +95,7 @@ class WeekRoutine(Plugin):
             {
                 "update": {
                     "message": "Поделитесь итогами вашей встречи в канале "
-                    '"Coffe на этой неделе", отправьте фото и '
+                    '"Coffee на этой неделе", отправьте фото и '
                     "краткие эмоции, чтобы мотивировать других "
                     "поучаствовать в Random Coffee!",
                     "props": {},
@@ -103,7 +103,7 @@ class WeekRoutine(Plugin):
             },
         )
 
-    @listen_webhook("match_review_answer_no")
+    @listen_webhook("match_review_is_not_complete")
     async def answer_no(
         self,
         event: ActionEvent,
@@ -134,3 +134,11 @@ class WeekRoutine(Plugin):
         self, user_id: str, matching_service: MatchingService = Provide[Container.matching_service,]
     ) -> Any:
         return await matching_service.get_match_pair_nickname(user_id)
+
+    async def wednesday_notification_and_closing_meetings(
+        self,
+        notify_service: NotifyService,
+        matching_service: MatchingService,
+    ) -> None:
+        await notify_service.match_review_notifications(plugin=self)
+        await matching_service.run_closing_meetings()
