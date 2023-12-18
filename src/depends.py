@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.bot.services.admin import AdminService
+from src.bot.services.create_message_service import FridayMessage, WednesdayMessage
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.bot.services.registration import RegistrationService
@@ -34,12 +35,17 @@ class Container(containers.DeclarativeContainer):
     matching_service = providers.Factory(
         MatchingService, user_repository=user_repository, match_repository=match_repository
     )
+    direct_friday_message = providers.Factory(FridayMessage, endpoints=endpoints)
+    direct_wednesday_message = providers.Factory(WednesdayMessage, endpoints=endpoints)
     week_routine_service = providers.Factory(
         NotifyService,
         user_repository=user_repository,
         match_repository=match_repository,
         match_review_repository=match_review_repository,
         endpoints=endpoints,
+        direct_friday_message=direct_friday_message,
+        direct_wednesday_message=direct_wednesday_message,
     )
+
     # Scheduler
     scheduler: AsyncIOScheduler = providers.Singleton(AsyncIOScheduler)
