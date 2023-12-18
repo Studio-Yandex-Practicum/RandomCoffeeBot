@@ -67,12 +67,16 @@ class BotAdmin(Plugin):
     @is_admin
     @inject
     async def test(
-        self, message: Message, matching_service: MatchingService = Provide[Container.matching_service]
+        self,
+        message: Message,
+        matching_service: MatchingService = Provide[Container.matching_service],
+        notify_service: NotifyService = Provide[Container.week_routine_service],
     ) -> None:
         """Тестирование создания пар"""
         try:
             reply_text = await matching_service.run_matching()
             self.driver.reply_to(message, reply_text)
+            await notify_service.send_no_pair_messages(plugin=self)
         except Exception as error:
             self.driver.reply_to(message, str(error))
 
