@@ -74,7 +74,7 @@ class NotifyService:
                 try:
                     plugin.driver.direct_message(
                         receiver_id=user_one.user_id,
-                        message=f"Твои встречи на неделю: {user_two.first_name} {user_two.last_name}",
+                        message=f"Твои встречи на неделю: {user_two.first_name} {user_two.last_name} @{user_two.username}",
                     )
                 except InvalidOrMissingParameters as error:
                     logger.error(str(error))
