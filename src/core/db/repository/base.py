@@ -71,3 +71,9 @@ class AbstractRepository(abc.ABC, Generic[Model]):
         async with self._sessionmaker() as session:
             session.add_all(instances)
             await session.commit()
+
+    async def delete(self, instance: Model) -> None:
+        """Удаляет существующий объект модели в базе."""
+        async with self._sessionmaker() as session:
+            await session.delete(instance)
+            await session.commit()

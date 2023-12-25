@@ -28,7 +28,10 @@ class Container(containers.DeclarativeContainer):
     match_review_repository = providers.Factory(MatchReviewRepository, sessionmaker=sessionmaker)
     # Services
     admin_service = providers.Factory(
-        AdminService, admin_repository=admin_repository, admin_username=settings.provided.ADMIN_USERNAME
+        AdminService,
+        admin_repository=admin_repository,
+        admin_username=settings.provided.ADMIN_USERNAME,
+        user_repository=user_repository,
     )
     registration_service = providers.Factory(RegistrationService, user_repository=user_repository)
     matching_service = providers.Factory(

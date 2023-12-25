@@ -11,3 +11,8 @@ class AdminRepository(AbstractRepository[Admin]):
         async with self._sessionmaker() as session:
             instance = await session.scalar(select(self._model).where(self._model.user_id == user_id))
             return instance
+
+    async def get_by_username(self, username: str) -> Admin | None:
+        async with self._sessionmaker() as session:
+            instance = await session.scalar(select(self._model).where(self._model.username == username))
+            return instance

@@ -2,7 +2,6 @@ import re
 from functools import wraps
 from typing import Any, Awaitable, Callable, TypeVar
 
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from dependency_injector.wiring import Provide, inject
 from mmpy_bot import Message, Plugin, listen_to
 
@@ -89,10 +88,35 @@ class BotAdmin(Plugin):
         except Exception as error:
             self.driver.reply_to(message, str(error))
 
-    @listen_to("stop_jobs", re.IGNORECASE)
+    @listen_to("^add_admin (.*)$", re.IGNORECASE)
     @is_admin
     @inject
-    async def cancel_jobs(self, message: Message, scheduler: AsyncIOScheduler = Provide[Container.scheduler,]) -> None:
-        """Остановка всех jobs"""
-        scheduler.shutdown()
-        self.driver.reply_to(message, "All jobs cancelled.")
+    async def add_extra_admin(
+        self, message: Message, username: str, admin_service: AdminService = Provide[Container.admin_service]
+    ) -> None:
+        """Добавление админов"""
+        if await admin_service.add_extra_admin(username) is True:
+            self.driver.reply_to(message, f"{username} теперь тоже админ!")
+        else:
+            self.driver.reply_to(message, f"Среди нас такого нет: {username}")
+
+    @listen_to("^del_admin (.*)$", re.IGNORECASE)
+    @is_admin
+    @inject
+    async def del_extra_admin(
+        self, message: Message, username: str, admin_service: AdminService = Provide[Container.admin_service]
+    ) -> None:
+        """Удаление админов"""
+        if await admin_service.del_extra_admin(username) is True:
+            self.driver.reply_to(message, f"{username} перестал быть админом!")
+        else:
+            self.driver.reply_to(message, f"Среди нас такого нет: {username}")
+
+    @listen_to("^all_admins", re.IGNORECASE)
+    @is_admin
+    @inject
+    async def all_admin(self, message: Message, admin_service: AdminService = Provide[Container.admin_service]) -> None:
+        """Получить список всех админов"""
+
+        admins = await admin_service.get_all_admins()
+        self.driver.reply_to(message, f"{admins}")
