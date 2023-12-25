@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     BOT_TOKEN: str
     BOT_TEAM: str = ""
     SSL_VERIFY: bool = False
+    CHANNEL_ID: str
     # logging settings
     LOG_FILE_LEVEL: str = "DEBUG"
     LOG_CONSOLE_LEVEL: str = "INFO"

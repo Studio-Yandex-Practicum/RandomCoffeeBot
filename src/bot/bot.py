@@ -1,6 +1,7 @@
 from mmpy_bot import Bot, Settings
 
 from src.bot.plugins.admin import BotAdmin
+from src.bot.plugins.command_registration import CommandRegistration
 from src.bot.plugins.matching import Matching
 from src.bot.plugins.registration import Registration
 from src.bot.plugins.week_routine import WeekRoutine
@@ -20,6 +21,6 @@ def init_bot(config: Settings_bot) -> Bot:
             WEBHOOK_HOST_URL=config.WEBHOOK_HOST_URL,
             WEBHOOK_HOST_PORT=config.WEBHOOK_HOST_PORT,
         ),
-        plugins=[Registration(), BotAdmin(), WeekRoutine(), Matching()],
+        plugins=[Registration(), BotAdmin(), WeekRoutine(), Matching(), CommandRegistration()],
     )
     return bot
