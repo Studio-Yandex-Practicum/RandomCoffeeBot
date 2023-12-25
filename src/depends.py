@@ -3,6 +3,7 @@ from dependency_injector import containers, providers
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from src.bot.services.admin import AdminService
+from src.bot.services.create_message_service import MessageForUsers
 from src.bot.services.matching import MatchingService
 from src.bot.services.notify_service import NotifyService
 from src.bot.services.registration import RegistrationService
@@ -26,6 +27,19 @@ class Container(containers.DeclarativeContainer):
     user_repository = providers.Factory(UserRepository, sessionmaker=sessionmaker)
     match_repository = providers.Factory(UsersMatchRepository, sessionmaker=sessionmaker)
     match_review_repository = providers.Factory(MatchReviewRepository, sessionmaker=sessionmaker)
+    # Messages
+    ask_for_random_coffee_message = providers.Factory(
+        MessageForUsers,
+        message_text="Хочешь ли принять участие в random coffee на следующей неделе?",
+        endpoint_yes=endpoints.provided.add_to_meeting,
+        endpoint_no=endpoints.provided.not_meeting,
+    )
+    ask_how_meeting_go_message = providers.Factory(
+        MessageForUsers,
+        message_text="Удалось ли вам встретиться?",
+        endpoint_yes=endpoints.provided.match_review_is_complete,
+        endpoint_no=endpoints.provided.match_review_is_not_complete,
+    )
     # Services
     admin_service = providers.Factory(
         AdminService,
@@ -43,6 +57,8 @@ class Container(containers.DeclarativeContainer):
         match_repository=match_repository,
         match_review_repository=match_review_repository,
         endpoints=endpoints,
+        direct_friday_message=ask_for_random_coffee_message,
+        direct_wednesday_message=ask_how_meeting_go_message,
     )
     # Scheduler
     scheduler: AsyncIOScheduler = providers.Singleton(AsyncIOScheduler)
