@@ -1,7 +1,6 @@
 from typing import Any
 
 from src.bot.schemas import Actions, Attachment, Context, Integration
-from src.endpoints import Endpoints
 
 
 class MessageForUsers:
@@ -22,23 +21,3 @@ class MessageForUsers:
 
     def return_message(self) -> dict[str, Any]:
         return self.message.model_dump()
-
-
-class FridayMessage(MessageForUsers):
-    def __init__(self, endpoints: Endpoints):
-        self._endpoints = endpoints
-        super().__init__(
-            message_text="Хочешь ли принять участие в random coffee на следующей неделе?",
-            endpoint_yes=self._endpoints.add_to_meeting,
-            endpoint_no=self._endpoints.not_meeting,
-        )
-
-
-class WednesdayMessage(MessageForUsers):
-    def __init__(self, endpoints: Endpoints):
-        self._endpoints = endpoints
-        super().__init__(
-            message_text="Удалось ли вам встретиться?",
-            endpoint_yes=self._endpoints.match_review_is_complete,
-            endpoint_no=self._endpoints.match_review_is_not_complete,
-        )

@@ -29,27 +29,6 @@ class NotifyService:
         self._direct_friday_message = direct_friday_message
         self._direct_wednesday_message = direct_wednesday_message
 
-    # @inject
-    # def direct_friday_message(self) -> Attachment:
-    #     action_yes = Actions(
-    #         id="yes",
-    #         name="Да",
-    #         type="button",
-    #         integration=Integration(url=self._endpoints.add_to_meeting, context=Context(action="yes")),
-    #     )
-    #
-    #     action_no = Actions(
-    #         id="No",
-    #         name="Нет",
-    #         type="button",
-    #         integration=Integration(url=self._endpoints.not_meeting, context=Context(action="no")),
-    #     )
-    #
-    #     every_friday_message = Attachment(
-    #         text="Хочешь ли принять участие в random coffee на следующей неделе?", actions=[action_yes, action_no]
-    #     )
-    #     return every_friday_message
-
     async def notify_all_users(self, plugin: Plugin, title: str = "Еженедельный опрос") -> None:
         """Функция отправки еженедельного сообщения (создания поста)"""
 
@@ -85,25 +64,6 @@ class NotifyService:
     async def set_match_review_answer(self, user_id: str, answer: str) -> None:
         match = await self._match_repository.get_by_user_id(user_id)
         await self._match_review_repository.set_match_review_answer(match, user_id, answer)
-
-    # @inject
-    # def direct_wednesday_message(self) -> Attachment:
-    #     action_yes = Actions(
-    #         id="yes",
-    #         name="Да",
-    #         type="button",
-    #         integration=Integration(url=self._endpoints.match_review_is_complete, context=Context(action="yes")),
-    #     )
-    #
-    #     action_no = Actions(
-    #         id="No",
-    #         name="Нет",
-    #         type="button",
-    #         integration=Integration(url=self._endpoints.match_review_is_not_complete, context=Context(action="no")),
-    #     )
-    #
-    #     every_wednesday_message = Attachment(text="Удалось ли вам встретиться?", actions=[action_yes, action_no])
-    #     return every_wednesday_message
 
     async def match_review_notifications(
         self,
