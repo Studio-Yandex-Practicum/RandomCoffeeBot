@@ -35,10 +35,11 @@ class WeekRoutine(Plugin):
             kwargs=dict(plugin=self, title="Еженедельный пятничный опрос"),
         )
         scheduler.add_job(
-            matching_service.run_matching,
+            self.run_matching_and_no_pair_messages,
             "cron",
             day_of_week=DAY_OF_WEEK_SUNDAY,
             hour=SUNDAY_TIME_SENDING_MESSAGE,
+            kwargs=dict(notify_service=notify_service, matching_service=matching_service),
         )
         scheduler.add_job(
             notify_service.meeting_notifications,
@@ -142,3 +143,11 @@ class WeekRoutine(Plugin):
     ) -> None:
         await notify_service.match_review_notifications(plugin=self)
         await matching_service.run_closing_meetings()
+
+    async def run_matching_and_no_pair_messages(
+        self,
+        notify_service: NotifyService,
+        matching_service: MatchingService,
+    ) -> None:
+        await matching_service.run_matching()
+        await notify_service.send_no_pair_messages(plugin=self)

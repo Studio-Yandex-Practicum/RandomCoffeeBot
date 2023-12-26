@@ -4,7 +4,7 @@ from mattermostautodriver.exceptions import InvalidOrMissingParameters
 from mmpy_bot import Plugin
 
 from src.bot.schemas import Actions, Attachment, Context, Integration
-from src.core.db.models import MatchStatusEnum, User
+from src.core.db.models import MatchStatusEnum, StatusEnum, User
 from src.core.db.repository.match_review import MatchReviewRepository
 from src.core.db.repository.user import UserRepository
 from src.core.db.repository.usersmatch import UsersMatchRepository
@@ -117,3 +117,16 @@ class NotifyService:
                     )
                 except InvalidOrMissingParameters as error:
                     logger.error(str(error))
+
+    async def send_no_pair_messages(self, plugin: Plugin) -> None:
+        for user in await self._user_repository.get_by_status(status=StatusEnum.WAITING_MEETING):
+            await self._user_repository.set_not_involved_status(user_id=user.id)
+            try:
+                plugin.driver.direct_message(
+                    receiver_id=user.user_id,
+                    message="К сожалению на этой неделе тебе не нашлось пары,"
+                    " но мы уверены, что тебе обязательно повезёт на "
+                    "следующей неделе!",
+                )
+            except InvalidOrMissingParameters as error:
+                logger.error(str(error))

@@ -75,3 +75,9 @@ class UserRepository(AbstractRepository[User]):
         if current_user is not None:
             current_user.status = StatusEnum.WAITING_MEETING
             await self.update(current_user.id, current_user)
+
+    async def set_not_involved_status(self, user_id: int) -> None:
+        """Устанавливает статус not_involved для юзера без пары"""
+        current_user = await self.get(instance_id=user_id)
+        current_user.status = StatusEnum.NOT_INVOLVED
+        await self.update(user_id, current_user)
